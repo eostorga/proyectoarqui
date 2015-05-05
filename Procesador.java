@@ -74,7 +74,7 @@ public class Procesador extends Thread {
                         estCache[dirBloqCache][EST] = C;            // Estado del bloque que ocupa ahora esa direccion de cache
                     break;
                     case M:
-                        guardarEnMemoria(idBloqEnCache*4, idBloqEnCache);   // Guarda el bloque está ahora en cache a su posicion en memoria 
+                        guardarEnMemoria(dirNumBloqMem, dirBloqCache);   // Guarda el bloque está ahora en cache a su posicion en memoria 
                         cargarACache(dirNumBloqMem, dirBloqCache);
                         estCache[dirBloqCache][ID] = dirNumBloqMem;         // Bloque que ocupa ahora esa direccion de cache
                         estCache[dirBloqCache][EST] = C;                    // Estado del bloque que ocupa ahora esa direccion de cache
@@ -126,7 +126,7 @@ public class Procesador extends Thread {
                         estCache[dirBloqCache][EST] = C;                // Estado del bloque que ocupa ahora esa direccion de cache
                     break;
                     case M:
-                        guardarEnMemoria(idBloqEnCache*4, idBloqEnCache);   // Creo que esos son los parámetros correctos. -Érick
+                        guardarEnMemoria(dirNumBloqMem, dirBloqCache);   // Creo que esos son los parámetros correctos. -Érick
                         cargarACache(dirNumBloqMem, dirBloqCache);
                         estCache[dirBloqCache][ID] = dirNumBloqMem;         // Bloque que ocupa ahora esa direccion de cache
                         estCache[dirBloqCache][EST] = C;                    // Estado del bloque que ocupa ahora esa direccion de cache
@@ -157,21 +157,42 @@ public class Procesador extends Thread {
         estCache[dirBloqCache][ID] = dirNumBloqMem; // Bloque que ocupa ahora esa direccion de cache
         estCache[dirBloqCache][EST] = M;            // Estado del bloque que ocupa ahora esa direccion de cache
     }
+    
+    //RX, ETIQ
+    //Si Rx = 0 SALTA
+    //X 0 n
     public void BEQZ(int X, int n){
         if(regs[X]==0) PC+=4*(n-1);
     }
+    
+    //RX, ETIQ
+    //Si Rx != 0 SALTA
+    //X 0 n
     public void BNEZ(int X, int n){
         if(regs[X]!=0) PC+=4*(n-1);
     }
+    
+    //RX, RY, #n
+    //Rx  (Ry) + n
+    //Y X n
     public void DADDI(int Y, int X, int n){
         regs[X]=regs[Y]+n;
     }
+    
+    //RX, RY, RZ
+    //Rx  (Ry) + (Rz)
+    //Y Z X
     public void DADD(int Y, int Z, int X){
         regs[X]=regs[Y]+regs[Z];
     }
+    
+    //DSUB RX, RY, RZ
+    //Rx  (Ry) - (Rz)
+    //Y Z X
     public void DSUB(int Y, int Z, int X){
         regs[X]=regs[Y]-regs[Z];
     }
+    
     public void FIN(){}
     
     public void procesarInstruccion(int cod, int param1, int param2, int param3){
@@ -238,7 +259,6 @@ public class Procesador extends Thread {
         for(int i = 0; i < 32; i++){
             estado += dmem[i]+", ";
         }
-        //estado += "Ciclo: "+myMp.ciclo+"\n";
         estado += "\n";
         System.out.println(estado);
         return estado; 
