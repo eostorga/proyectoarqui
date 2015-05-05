@@ -5,6 +5,7 @@ import java.io.IOException;
 public class Procesador extends Thread {
     
     private static Multiprocesador myMp;
+    private int stop = 0;
     
     //COLUMNAS EN CACHE
     private final int ID = 0;
@@ -55,6 +56,7 @@ public class Procesador extends Thread {
         int numPalabra = (numByte%16)/4;
         int dirBloqCache = numBloqMem%4;                        // Indice donde debe estar el bloque en cache
         int idBloqEnCache = estCache[dirBloqCache][ID];         // ID del bloque que ocupa actualmente esa direccion en cache
+        
         int estadoBloqEnCache = estCache[dirBloqCache][EST];    // Estado del bloque que ocupa esa dir de cache ('M', 'C', 'I')
         int dirNumBloqMem = numBloqMem*4;                       // Conversion para mapear la direccion inicial del bloque en memoria
 
@@ -102,6 +104,9 @@ public class Procesador extends Thread {
     }
     
     // Escribir una palabra
+    //SW RX, n(RY)
+    //M(n + (Ry))  Rx
+    //Y X n
     public void SW(int Y, int X, int n){
         int numByte = regs[Y]+n;                                // Numero del byte que quiero leer de memoria 
         int numBloqMem = Math.floorDiv(numByte,16);             // Indice del bloque en memoria (0-24)
@@ -162,14 +167,35 @@ public class Procesador extends Thread {
     //Si Rx = 0 SALTA
     //X 0 n
     public void BEQZ(int X, int n){
-        if(regs[X]==0) PC+=4*(n-1);
+        if(regs[X]==0){
+            if(n >= 0){
+                PC+=4*(n-1);
+            }
+            else{
+                PC+=4*(n);
+            }
+        }
     }
     
     //RX, ETIQ
     //Si Rx != 0 SALTA
     //X 0 n
     public void BNEZ(int X, int n){
-        if(regs[X]!=0) PC+=4*(n-1);
+        if(regs[X]!=0){
+            //System.out.print("Si el R"+X+" es distinto de 0, brinco ");
+            if(n >= 0){
+                PC+=4*(n-1);
+                //System.out.print(4*(n-1)+".\n");
+            }
+            else{
+                //IR -> 12 
+                //PC -> 16
+                //quiero moverme -2 y llegar a 4
+                //PC += 4*-2 = -8 -> PC = 12-8 = 8
+                PC+=4*(n);
+                //System.out.print(4*(n)+".\n");
+            }
+        }
     }
     
     //RX, RY, #n
@@ -189,51 +215,57 @@ public class Procesador extends Thread {
     //DSUB RX, RY, RZ
     //Rx  (Ry) - (Rz)
     //Y Z X
+    //34 5 1 5
     public void DSUB(int Y, int Z, int X){
         regs[X]=regs[Y]-regs[Z];
     }
     
-    public void FIN(){}
+    public void FIN(){
+        stop = 1;
+    }
     
-    public void procesarInstruccion(int cod, int param1, int param2, int param3){
-        IR = PC;
-        PC = PC + 4;
+    public void procesarInstruccion(int i){
+        PC += 4;
+        int cod, p1, p2, p3;
+        cod = myMp.getInstIdx(i);
+        p1 = myMp.getInstIdx(i+1);
+        p2 = myMp.getInstIdx(i+2); 
+        p3 = myMp.getInstIdx(i+3);
+        System.out.println("Mi cod es "+cod);
         switch(cod){
             case 8:
-                DADDI(param1, param2, param3);
+                DADDI(p1, p2, p3);
             break;
             case 32:
-                DADD(param1, param2, param3);
+                DADD(p1, p2, p3);
             break;
             case 34:
-                DSUB(param1, param2, param3);
+                DSUB(p1, p2, p3);
             break;
             case 35:
-                LW(param1, param2, param3);
+                LW(p1, p2, p3);
             break;
             case 43:
-                SW(param1, param2, param3);
+                SW(p1, p2, p3);
             break;
             case 4:
-                BEQZ(param1, param3);
+                BEQZ(p1, p3);
             break;
             case 5:
-                BNEZ(param1, param3);
+                BNEZ(p1, p3);
             break;
             case 63:
+                FIN();
             break;
         }
     }
     
     public void procesar(int pcA, int limit){
-        PC = pcA;
-        int cod, p1, p2, p3;
-        for(int i = IR; i < limit; i+=4){
-            cod = myMp.getInstIdx(i);
-            p1 = myMp.getInstIdx(i+1);
-            p2 = myMp.getInstIdx(i+2); 
-            p3 = myMp.getInstIdx(i+3);
-            procesarInstruccion(cod, p1, p2, p3);
+        stop = 0;
+        IR = PC = pcA;
+        while(stop != 1 && IR < limit){
+            IR = PC;
+            procesarInstruccion(IR);
             verEstado();
         }
     }
