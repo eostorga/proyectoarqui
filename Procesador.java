@@ -5,6 +5,13 @@ import java.io.IOException;
 public class Procesador extends Thread {
     
     private static Multiprocesador myMp;
+    
+    private int pcA;
+    private int limit;
+    
+    private boolean puedoSeguir = true;
+    private int ciclo = 0;
+    
     private int stop = 0;
     
     //COLUMNAS EN CACHE
@@ -38,6 +45,21 @@ public class Procesador extends Thread {
             dcache[direccionCache][i] = dmem[j];
             j++;
         }
+        
+        for(int i = 0; i<16; i++){
+            puedoSeguir = false;
+            try {
+                myMp.barrera.await();
+                ciclo++;
+                System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        
+        puedoSeguir = true;
+        System.out.println("Ya puede cambiar de instrucción.");
+        
     }
     
     // Guarda el bloque entero desde cache hasta el lugar en memoria que le corresponde
@@ -47,6 +69,20 @@ public class Procesador extends Thread {
             dmem[j] = dcache[direccionCache][i];
             j++;
         }
+        
+        for(int i = 0; i<16; i++){
+            puedoSeguir = false;
+            try {
+                myMp.barrera.await();
+                ciclo++;
+                System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        
+        puedoSeguir = true;
+        System.out.println("Ya puede cambiar de instrucción.");
     }
     
     // Leer una palabra
@@ -231,7 +267,7 @@ public class Procesador extends Thread {
         p1 = myMp.getInstIdx(i+1);
         p2 = myMp.getInstIdx(i+2); 
         p3 = myMp.getInstIdx(i+3);
-        System.out.println("Mi cod es "+cod);
+        //System.out.println("Mi cod es "+cod);
         switch(cod){
             case 8:
                 DADDI(p1, p2, p3);
@@ -258,16 +294,50 @@ public class Procesador extends Thread {
                 FIN();
             break;
         }
+        puedoSeguir = true;
+        try{
+            myMp.barrera.await();
+            ciclo++;
+            System.out.println("Ciclo #"+ciclo+". Puede cambiar de instrucción.");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     
+    /*
     public void procesar(int pcA, int limit){
         stop = 0;
         IR = PC = pcA;
         while(stop != 1 && IR < limit){
             IR = PC;
-            procesarInstruccion(IR);
-            verEstado();
+            if(puedoSeguir){
+                procesarInstruccion(IR);
+                verEstado();
+            }
+            
         }
+    }*/
+    
+    public void setPcAyLimit(int pcActual, int limite){
+        this.pcA = pcActual;
+        this.limit = limite;
+    }
+    
+    public void procesar(){
+        stop = 0;
+        IR = PC = pcA;
+        while(stop != 1 && IR < limit){
+            IR = PC;
+            if(puedoSeguir){
+                procesarInstruccion(IR);
+                verEstado();
+            }
+            
+        }
+    }
+    
+    public void run() {
+        procesar();
     }
     
     public String verEstado(){
@@ -292,7 +362,7 @@ public class Procesador extends Thread {
             estado += dmem[i]+", ";
         }
         estado += "\n";
-        System.out.println(estado);
+        //System.out.println(estado);
         return estado; 
     }
     

@@ -7,6 +7,8 @@ import proy_arqui.CargadorArchivos;
 
 public class Multiprocesador {
     
+    public final CyclicBarrier barrera = new CyclicBarrier(1);
+    
     private Simulacion sim;
     private Procesador proc1 = new Procesador(this);
     private ArrayList<Integer> instrucciones = new ArrayList<Integer>();
@@ -55,7 +57,8 @@ public class Multiprocesador {
             for(int i = 0; i < numHilitos; i++){
                 pcActual = pcs.get(i);
                 if((i+1)<pcs.size()) limite = pcs.get(i+1); else limite = instrucciones.size()-pcActual;
-                proc1.procesar(pcActual, limite);
+                proc1.setPcAyLimit(pcActual, limite);
+                proc1.start();
                 verEstadisticas();
             }
         }
