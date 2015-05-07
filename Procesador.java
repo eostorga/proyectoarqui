@@ -114,6 +114,7 @@ public class Procesador extends Thread {
                     break;
                     case M:
                         guardarEnMemoria(estCache[dirBloqCache][ID], dirBloqCache);
+                        estCache[dirBloqCache][EST] = C;
                         //guardarEnMemoria(dirNumBloqMem, dirBloqCache);   // Guarda el bloque está ahora en cache a su posicion en memoria 
                         cargarACache(dirNumBloqMem, dirBloqCache);
                         estCache[dirBloqCache][ID] = dirNumBloqMem;         // Bloque que ocupa ahora esa direccion de cache
@@ -170,6 +171,7 @@ public class Procesador extends Thread {
                     break;
                     case M:
                         guardarEnMemoria(estCache[dirBloqCache][ID], dirBloqCache);   // Creo que esos son los parámetros correctos. -Érick
+                        estCache[dirBloqCache][EST] = C;
                         cargarACache(dirNumBloqMem, dirBloqCache);
                         estCache[dirBloqCache][ID] = dirNumBloqMem;         // Bloque que ocupa ahora esa direccion de cache
                         estCache[dirBloqCache][EST] = C;                    // Estado del bloque que ocupa ahora esa direccion de cache
