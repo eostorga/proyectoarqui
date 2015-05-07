@@ -14,6 +14,7 @@ public class Procesador extends Thread {
     private int ciclo = 0;
     
     private int stop = 0;
+    private int cont = 0;
     
     //COLUMNAS EN CACHE
     private final int ID = 0;
@@ -51,7 +52,7 @@ public class Procesador extends Thread {
             puedoSeguir = false;
             try {
                 myMp.barrera.await();
-                ciclo++;
+                ciclo++; cont++;
                 //System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
             }catch (Exception e){
                 e.printStackTrace();
@@ -75,7 +76,7 @@ public class Procesador extends Thread {
             puedoSeguir = false;
             try {
                 myMp.barrera.await();
-                ciclo++;
+                ciclo++; cont++;
                 //System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
             }catch (Exception e){
                 e.printStackTrace();
@@ -299,7 +300,7 @@ public class Procesador extends Thread {
         puedoSeguir = true;
         try{
             myMp.barrera.await();
-            ciclo++;
+            ciclo++; cont++;
             System.out.println("Ciclo #"+ciclo+". Puede cambiar de instrucción.\n");
         }catch (Exception e){
             e.printStackTrace();
@@ -326,13 +327,15 @@ public class Procesador extends Thread {
     }
     
     public void procesar(){
+        int cont = 0;
+        myMp.setClock(ciclo);
         stop = 0;
         IR = PC = pcA;
         while(stop != 1 && IR < limit){
             IR = PC;
             if(puedoSeguir){
                 procesarInstruccion(IR);
-                if(stop == 1){ verEstado();}
+                if(stop == 1){ /*verEstado();*/ myMp.verEstadisticas(); }
             }            
         }
     }
@@ -363,6 +366,7 @@ public class Procesador extends Thread {
             estado += dmem[i]+", ";
         }
         estado += "\n";
+        estado += "La cantidad de ciclos que tardó el hilo es: "+cont+"\n";
         System.out.println(estado);
         return estado; 
     }

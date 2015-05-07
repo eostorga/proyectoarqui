@@ -137,8 +137,8 @@ public class Simulacion extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void setProc1(String text){
-        jTextField1.setText(text);
+    public void setProc1(int p){
+        jTextField1.setText(Integer.toString(p));
     }
     
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -147,6 +147,10 @@ public class Simulacion extends javax.swing.JFrame {
 
     public void setEstadisticas(String text){
         jTextArea1.append(text);
+    }
+    
+    public void setReloj(int r){
+        jTextArea1.append("El reloj inicia en: "+Integer.toString(r)+"\n");
     }
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

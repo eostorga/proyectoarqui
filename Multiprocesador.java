@@ -59,15 +59,19 @@ public class Multiprocesador {
                 if((i+1)<pcs.size()) limite = pcs.get(i+1); else limite = instrucciones.size()-pcActual;
                 proc1.setPcAyLimit(pcActual, limite);
                 proc1.start();
-                verEstadisticas();
+                sim.setProc1((int) proc1.getId());
+                //verEstadisticas();
             }
         }
+    }
+    
+    public void setClock(int r){
+        sim.setReloj(r);
     }
     
     public void verEstadisticas(){
         sim.setEstadisticas(proc1.verEstado());
     }
-    
     
     /**
      * @param args the command line arguments
