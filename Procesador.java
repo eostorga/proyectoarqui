@@ -175,9 +175,9 @@ public class Procesador extends Thread {
                         estCache[dirBloqCache][EST] = C;                    // Estado del bloque que ocupa ahora esa direccion de cache
                     break;
                     case I:
-                        cargarACache(dirNumBloqMem, dirBloqCache);
-                        estCache[dirBloqCache][ID] = dirNumBloqMem;     // Bloque que ocupa ahora esa direccion de cache
-                        estCache[dirBloqCache][EST] = C;                // Estado del bloque que ocupa ahora esa direccion de cache
+                        //cargarACache(dirNumBloqMem, dirBloqCache);
+                        //estCache[dirBloqCache][ID] = dirNumBloqMem;     // Bloque que ocupa ahora esa direccion de cache
+                        //estCache[dirBloqCache][EST] = C;                // Estado del bloque que ocupa ahora esa direccion de cache
                         //previsto para los directorios, por el momento no puede estar invalido
                     break;
                 }
