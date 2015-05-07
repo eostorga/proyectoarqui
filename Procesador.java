@@ -10,6 +10,7 @@ public class Procesador extends Thread {
     private int limit;
     
     private boolean puedoSeguir = true;
+    private boolean final_programa = false;
     private int ciclo = 0;
     
     private int stop = 0;
@@ -51,14 +52,14 @@ public class Procesador extends Thread {
             try {
                 myMp.barrera.await();
                 ciclo++;
-                System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
+                //System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
         
         puedoSeguir = true;
-        System.out.println("Ya puede cambiar de instrucción.");
+        //System.out.println("Ya puede cambiar de instrucción.");
         
     }
     
@@ -75,14 +76,14 @@ public class Procesador extends Thread {
             try {
                 myMp.barrera.await();
                 ciclo++;
-                System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
+                //System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
         
         puedoSeguir = true;
-        System.out.println("Ya puede cambiar de instrucción.");
+        //System.out.println("Ya puede cambiar de instrucción.");
     }
     
     // Leer una palabra
@@ -112,7 +113,8 @@ public class Procesador extends Thread {
                         estCache[dirBloqCache][EST] = C;            // Estado del bloque que ocupa ahora esa direccion de cache
                     break;
                     case M:
-                        guardarEnMemoria(dirNumBloqMem, dirBloqCache);   // Guarda el bloque está ahora en cache a su posicion en memoria 
+                        guardarEnMemoria(estCache[dirBloqCache][ID], dirBloqCache);
+                        //guardarEnMemoria(dirNumBloqMem, dirBloqCache);   // Guarda el bloque está ahora en cache a su posicion en memoria 
                         cargarACache(dirNumBloqMem, dirBloqCache);
                         estCache[dirBloqCache][ID] = dirNumBloqMem;         // Bloque que ocupa ahora esa direccion de cache
                         estCache[dirBloqCache][EST] = C;                    // Estado del bloque que ocupa ahora esa direccion de cache
@@ -167,7 +169,7 @@ public class Procesador extends Thread {
                         estCache[dirBloqCache][EST] = C;                // Estado del bloque que ocupa ahora esa direccion de cache
                     break;
                     case M:
-                        guardarEnMemoria(dirNumBloqMem, dirBloqCache);   // Creo que esos son los parámetros correctos. -Érick
+                        guardarEnMemoria(estCache[dirBloqCache][ID], dirBloqCache);   // Creo que esos son los parámetros correctos. -Érick
                         cargarACache(dirNumBloqMem, dirBloqCache);
                         estCache[dirBloqCache][ID] = dirNumBloqMem;         // Bloque que ocupa ahora esa direccion de cache
                         estCache[dirBloqCache][EST] = C;                    // Estado del bloque que ocupa ahora esa direccion de cache
@@ -298,7 +300,7 @@ public class Procesador extends Thread {
         try{
             myMp.barrera.await();
             ciclo++;
-            System.out.println("Ciclo #"+ciclo+". Puede cambiar de instrucción.");
+            System.out.println("Ciclo #"+ciclo+". Puede cambiar de instrucción.\n");
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -330,9 +332,8 @@ public class Procesador extends Thread {
             IR = PC;
             if(puedoSeguir){
                 procesarInstruccion(IR);
-                verEstado();
-            }
-            
+                if(stop == 1){ verEstado();}
+            }            
         }
     }
     
@@ -362,7 +363,7 @@ public class Procesador extends Thread {
             estado += dmem[i]+", ";
         }
         estado += "\n";
-        //System.out.println(estado);
+        System.out.println(estado);
         return estado; 
     }
     
