@@ -16,6 +16,8 @@ public class Procesador extends Thread {
     private int stop = 0;
     private int cont = 0;
     
+    private int destruir = 0;
+    
     //COLUMNAS EN CACHE
     private final int ID = 0;
     private final int EST = 1;
@@ -303,7 +305,7 @@ public class Procesador extends Thread {
         try{
             myMp.barrera.await();
             ciclo++; cont++;
-            System.out.println("Ciclo #"+ciclo+". Puede cambiar de instrucción.\n");
+            //System.out.println("Ciclo #"+ciclo+". Puede cambiar de instrucción.\n");
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -343,7 +345,26 @@ public class Procesador extends Thread {
     }
     
     public void run() {
-        procesar();
+        //procesar();
+        while(destruir == 0){
+            stop = 0;
+            System.out.println(limit);
+            procesar();
+            System.out.println("lo hice");
+            synchronized(this){
+                notify();
+                stop = 0;
+                try{
+                    wait();
+                }catch(InterruptedException e){
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+    }
+    
+    public void salir() {
+        destruir = 1;
     }
     
     public String verEstado(){

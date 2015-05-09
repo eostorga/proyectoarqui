@@ -55,13 +55,29 @@ public class Multiprocesador {
         int limite = -1;
         if(numHilitos!=0){
             for(int i = 0; i < numHilitos; i++){
-                pcActual = pcs.get(i);
-                if((i+1)<pcs.size()) limite = pcs.get(i+1); else limite = instrucciones.size()-pcActual;
-                proc1.setPcAyLimit(pcActual, limite);
-                proc1.start();
-                sim.setProc1((int) proc1.getId());
-                //verEstadisticas();
+                synchronized(proc1){
+                    pcActual = pcs.get(i);
+                    if((i+1)<pcs.size()) limite = pcs.get(i+1); else limite = instrucciones.size();
+                    System.out.println(limite);
+                    proc1.setPcAyLimit(pcActual, limite);
+                    if(i==0)proc1.start();
+                    System.out.println("sincronizando");
+                    if(i!=0)proc1.notify();
+                    try{
+                        System.out.println("espero.....");
+                        proc1.wait();
+                        System.out.println("me sali");
+                    }catch(InterruptedException e){
+                        System.out.println(e.getMessage());
+                    }
+                }  
             }
+            synchronized(proc1){
+                proc1.salir();
+                proc1.notify();
+            }
+            sim.setProc1((int) proc1.getId());
+            //verEstadisticas();
         }
     }
     
