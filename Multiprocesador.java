@@ -9,20 +9,24 @@ public class Multiprocesador {
     
     public final CyclicBarrier barrera = new CyclicBarrier(1);
     
+    //estructuras para el multiprocesador
     private Simulacion sim;
     private Procesador proc1 = new Procesador(this);
     private ArrayList<Integer> instrucciones = new ArrayList<Integer>();
     private ArrayList<Integer> pcs = new ArrayList<Integer>();
     private int numHilitos; //cantidad de archivos cargados por el usuario
     
+    //constructor
     public Multiprocesador(Simulacion sim){
         this.sim = sim;
     }
     
+    //agrega un numero al arreglo de instrucciones global
     public void agregarInstruccion(int num){
         instrucciones.add(num);
     }
     
+    //muestra las instrucciones cargadas en el multiprocesador
     public void verInstrucciones(){
         System.out.println("Se han cargado "+numHilitos+" programas.");
         System.out.println("El arreglo de instrucciones hasta el momento es el siguiente:");
@@ -38,18 +42,22 @@ public class Multiprocesador {
         System.out.println();
     }
     
+    //aumenta si se carga un nuevo programa
     public void sumarHilito(){
         numHilitos++;
     }
     
+    //agrega un nuevo contador de programa
     public void agregarPc(){
         pcs.add(instrucciones.size());
     }
     
+    //retorna la palabra que esta en el indice idx
     public int getInstIdx(int idx){
         return instrucciones.get(idx);
     }
     
+    //se encarga de la logica del programa, de correr cada programa cargado y de hacer la sincronizacion de los hilos
     public void correrProgramas(){
         int pcActual;
         int limite = -1;
@@ -81,10 +89,12 @@ public class Multiprocesador {
         }
     }
     
+    //set del reloj en la ventana de simulacion
     public void setClock(int r){
         sim.setReloj(r);
     }
     
+    //set de las estadisticas en la ventana de simulacion
     public void verEstadisticas(){
         sim.setEstadisticas(proc1.verEstado());
     }

@@ -34,6 +34,7 @@ public class Procesador extends Thread {
     private int estCache[][] = new int[4][2];   // 8bloques*4 = 32 palabras ---> 32palabras*4 = 128 direcciones de palabras
     private int dmem[] = new int[32];           // Memoria de datos compartida (8 bloques, cada uno con 4 palabras)    
     
+    //constructor
     public Procesador(Multiprocesador mp){
         myMp = mp;
         for(int x=0; x < 4; ++x){
@@ -267,6 +268,7 @@ public class Procesador extends Thread {
         stop = 1;
     }
     
+    //procesa una instruccion
     public void procesarInstruccion(int i){
         PC += 4;
         int cod, p1, p2, p3;
@@ -325,11 +327,13 @@ public class Procesador extends Thread {
         }
     }*/
     
+    //set a las variables necesarias para reconocer el programa q se esta corriendo
     public void setPcAyLimit(int pcActual, int limite){
         this.pcA = pcActual;
         this.limit = limite;
     }
     
+    //procesa cuantas instrucciones tenga el programa
     public void procesar(){
         int cont = 0;
         myMp.setClock(ciclo);
@@ -344,6 +348,7 @@ public class Procesador extends Thread {
         }
     }
     
+    //metodo run del hilo, aqui se hace la coherencia con el hilo principal
     public void run() {
         //procesar();
         while(destruir == 0){
@@ -363,10 +368,12 @@ public class Procesador extends Thread {
         }
     }
     
+    //set de sentinela para terminar el hilo q se esta corriendo
     public void salir() {
         destruir = 1;
     }
     
+    //muestra el estado del procesador
     public String verEstado(){
         String estado = "";
         estado += "El PC es: "+ PC + "\n";
