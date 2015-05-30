@@ -11,7 +11,8 @@ public class Multiprocesador {
     
     //estructuras para el multiprocesador
     private Simulacion sim;
-    private Procesador proc1 = new Procesador(this);
+    private Estructuras estructura = new Estructuras();
+    private Procesador proc1 = new Procesador(1,this,estructura);
     private ArrayList<Integer> instrucciones = new ArrayList<Integer>();
     private ArrayList<Integer> pcs = new ArrayList<Integer>();
     private int numHilitos; //cantidad de archivos cargados por el usuario

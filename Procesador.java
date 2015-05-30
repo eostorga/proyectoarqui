@@ -5,6 +5,8 @@ import java.io.IOException;
 public class Procesador extends Thread {
     
     private static Multiprocesador myMp;
+    private Estructuras estr;
+    private int myNumP; 
     
     private int pcA;
     private int limit;
@@ -30,24 +32,77 @@ public class Procesador extends Thread {
     private int IR;                             // Registro de instruccion
     private int regs[] = new int[32];           // 32 registros
     // Para la cache de datos agregamos dos filas extra que hacen referencia al número de bloque y al estado del bloque ('C','M','I')
-    private int dcache[][] = new int[4][4];     // Cache de datos (4 bloques, cada bloque con 4 palabras, cada palabra 4 bytes)
-    private int estCache[][] = new int[4][2];   // 8bloques*4 = 32 palabras ---> 32palabras*4 = 128 direcciones de palabras
-    private int dmem[] = new int[32];           // Memoria de datos compartida (8 bloques, cada uno con 4 palabras)    
+    //private int dcache[][] = new int[4][4];     // Cache de datos (4 bloques, cada bloque con 4 palabras, cada palabra 4 bytes)
+    //private int estCache[][] = new int[4][2];   // 8bloques*4 = 32 palabras ---> 32palabras*4 = 128 direcciones de palabras
+    
+    //private int dmem[] = new int[32];           // Memoria de datos compartida (8 bloques, cada uno con 4 palabras)    
     
     //constructor
-    public Procesador(Multiprocesador mp){
+    public Procesador(int numP, Multiprocesador mp, Estructuras es){
         myMp = mp;
+        estr = es; 
+        myNumP = numP;
         for(int x=0; x < 4; ++x){
-            estCache[x][EST] = I;
-            estCache[x][ID] = -1;
+            setEstBloqueCache(x, I);
+            setIdBloqueCache(x, -1);
+            //estCache[x][EST] = I;
+            //estCache[x][ID] = -1;
         }
     }
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //SECCION DE SETS Y GETS, NO IMPORTA DE DONDE VENGA LA MEMORIA Y CACHE, LOS CAMBIOS
+    //SE HACEN SOLO ACA Y NO EN EL RESTO DEL CODIGO
+    
+    public void setPalabraCache(int indiceBloque, int indicePalabra, int valor){
+        estr.setPalabraCache(myNumP,indiceBloque,indicePalabra,valor);
+        //dcache[indiceBloque][indicePalabra] = valor;
+    }
+    
+    public int getPalabraCache(int indiceBloque, int indicePalabra){
+        return estr.getPalabraCache(myNumP,indiceBloque,indicePalabra);
+        //return dcache[indiceBloque][indicePalabra];
+    }
+    
+    public void setEstBloqueCache(int indiceBloque, int estado){
+        estr.setEstBloqueCache(myNumP,indiceBloque,estado);
+        //estCache[indiceBloque][EST] = estado;
+    }
+    
+    public int getEstBloqueCache(int indiceBloque){
+        return estr.getEstBloqueCache(myNumP,indiceBloque);
+        //return estCache[indiceBloque][EST];
+    }
+    
+    public void setIdBloqueCache(int indiceBloque, int id){
+        estr.setIdBloqueCache(myNumP,indiceBloque, id);
+        //estCache[indiceBloque][ID] = id;
+    }
+    
+    public int getIdBloqueCache(int indiceBloque){
+        return estr.getIdBloqueCache(myNumP,indiceBloque);
+        //return estCache[indiceBloque][ID];
+    }
+    
+    public void setPalabraMem(int indiceMem, int valor){
+        estr.setPalabraMem(myNumP, indiceMem, valor);
+        //dmem[indiceMem] = valor;
+    }
+    
+    public int getPalabraMem(int indiceMem){
+        return estr.getPalabraMem(myNumP, indiceMem);
+    }
+    //FIN DE LA SECCION DE SETS Y GETS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     
     // Copia el bloque entero en el lugar que le corresponde en cache
     public void cargarACache(int direccionMemoria, int direccionCache){
         int j = direccionMemoria;
         for(int i = 0; i < 4; i++){
-            dcache[direccionCache][i] = dmem[j];
+            setPalabraCache(direccionCache, i, getPalabraMem(j));
+            //setPalabraCache(direccionCache, i, dmem[j]);
+            //dcache[direccionCache][i] = dmem[j];
             j++;
         }
         
@@ -71,7 +126,9 @@ public class Procesador extends Thread {
     public void guardarEnMemoria(int direccionMemoria, int direccionCache){
         int j = direccionMemoria;
         for(int i = 0; i < 4; i++){
-            dmem[j] = dcache[direccionCache][i];
+            setPalabraMem(j, getPalabraCache(direccionCache, i)); 
+            //dmem[j] = getPalabraCache(direccionCache, i);
+            //dmem[j] = dcache[direccionCache][i];
             j++;
         }
         
@@ -96,9 +153,11 @@ public class Procesador extends Thread {
         int numBloqMem = Math.floorDiv(numByte,16);             // Indice del bloque en memoria (0-24)
         int numPalabra = (numByte%16)/4;
         int dirBloqCache = numBloqMem%4;                        // Indice donde debe estar el bloque en cache
-        int idBloqEnCache = estCache[dirBloqCache][ID];         // ID del bloque que ocupa actualmente esa direccion en cache
+        int idBloqEnCache = getIdBloqueCache(dirBloqCache);        // ID del bloque que ocupa actualmente esa direccion en cache
+        //int idBloqEnCache = estCache[dirBloqCache][ID];         // ID del bloque que ocupa actualmente esa direccion en cache
         
-        int estadoBloqEnCache = estCache[dirBloqCache][EST];    // Estado del bloque que ocupa esa dir de cache ('M', 'C', 'I')
+        int estadoBloqEnCache = getEstBloqueCache(dirBloqCache);  // Estado del bloque que ocupa esa dir de cache ('M', 'C', 'I')
+        //int estadoBloqEnCache = estCache[dirBloqCache][EST];    // Estado del bloque que ocupa esa dir de cache ('M', 'C', 'I')
         int dirNumBloqMem = numBloqMem*4;                       // Conversion para mapear la direccion inicial del bloque en memoria
 
         // CASO 1: el bloque que requerimos no esta en cache, en su lugar hay otro bloque
@@ -106,23 +165,31 @@ public class Procesador extends Thread {
             // El id del bloque que esta ocupando cache es -1 (no hay bloque) o es otro bloque
             if(idBloqEnCache == -1){
                     cargarACache(dirNumBloqMem, dirBloqCache);
-                    estCache[dirBloqCache][ID] = dirNumBloqMem; // Bloque que ocupa ahora esa direccion de cache
-                    estCache[dirBloqCache][EST] = C;            // Estado del bloque que ocupa ahora esa direccion de cache
+                    setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+                    setEstBloqueCache(dirBloqCache, C);
+                    //estCache[dirBloqCache][ID] = dirNumBloqMem; // Bloque que ocupa ahora esa direccion de cache
+                    //estCache[dirBloqCache][EST] = C;            // Estado del bloque que ocupa ahora esa direccion de cache
             }else{
                 switch(estadoBloqEnCache){
                     case C:
                         // Nos traemos el bloque de memoria a cache
                         cargarACache(dirNumBloqMem, dirBloqCache);
-                        estCache[dirBloqCache][ID] = dirNumBloqMem; // Bloque que ocupa ahora esa direccion de cache
-                        estCache[dirBloqCache][EST] = C;            // Estado del bloque que ocupa ahora esa direccion de cache
+                        setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+                        setEstBloqueCache(dirBloqCache, C);
+                        //estCache[dirBloqCache][ID] = dirNumBloqMem; // Bloque que ocupa ahora esa direccion de cache
+                        //estCache[dirBloqCache][EST] = C;            // Estado del bloque que ocupa ahora esa direccion de cache
                     break;
                     case M:
-                        guardarEnMemoria(estCache[dirBloqCache][ID], dirBloqCache);
-                        estCache[dirBloqCache][EST] = C;
+                        guardarEnMemoria(getIdBloqueCache(dirBloqCache), dirBloqCache); 
+                        //guardarEnMemoria(estCache[dirBloqCache][ID], dirBloqCache);
+                        setEstBloqueCache(dirBloqCache, C);
+                        //estCache[dirBloqCache][EST] = C;
                         //guardarEnMemoria(dirNumBloqMem, dirBloqCache);   // Guarda el bloque está ahora en cache a su posicion en memoria 
                         cargarACache(dirNumBloqMem, dirBloqCache);
-                        estCache[dirBloqCache][ID] = dirNumBloqMem;         // Bloque que ocupa ahora esa direccion de cache
-                        estCache[dirBloqCache][EST] = C;                    // Estado del bloque que ocupa ahora esa direccion de cache
+                        setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+                        setEstBloqueCache(dirBloqCache, C);
+                        //estCache[dirBloqCache][ID] = dirNumBloqMem;         // Bloque que ocupa ahora esa direccion de cache
+                        //estCache[dirBloqCache][EST] = C;                    // Estado del bloque que ocupa ahora esa direccion de cache
                     break;
                     case I:
                         // Previsto para los directorios, por el momento no puede estar invalido
@@ -136,14 +203,16 @@ public class Procesador extends Thread {
                 break;
                 case M:
                     guardarEnMemoria(dirNumBloqMem, dirBloqCache);
-                    estCache[dirBloqCache][EST] = C;    // Estado del bloque que ocupa ahora esa direccion de cache
+                    setEstBloqueCache(dirBloqCache, C);
+                    //estCache[dirBloqCache][EST] = C;    // Estado del bloque que ocupa ahora esa direccion de cache
                 break;
                 case I:
                     // Previsto para los directorios, por el momento no puede estar invalido
                 break;
             }
         }
-        regs[X] = dcache[dirBloqCache][numPalabra];     // Carga la palabra que se ocupa al registro
+        regs[X] = getPalabraCache(dirBloqCache, numPalabra);     // Carga la palabra que se ocupa al registro
+        //regs[X] = dcache[dirBloqCache][numPalabra];     // Carga la palabra que se ocupa al registro
     }
     
     // Escribir una palabra
@@ -155,30 +224,42 @@ public class Procesador extends Thread {
         int numBloqMem = Math.floorDiv(numByte,16);             // Indice del bloque en memoria (0-24)
         int numPalabra = (numByte%16)/4;
         int dirBloqCache = numBloqMem%4;                        // Indice donde debe estar el bloque en cache
-        int idBloqEnCache = estCache[dirBloqCache][ID];         // ID del bloque que ocupa actualmente esa direccion en cache
-        int estadoBloqEnCache = estCache[dirBloqCache][EST];    // Estado del bloque que ocupa esa dir de cache ('M', 'C', 'I')
+        int idBloqEnCache = getIdBloqueCache(dirBloqCache);         // ID del bloque que ocupa actualmente esa direccion en cache
+        //int idBloqEnCache = estCache[dirBloqCache][ID];         // ID del bloque que ocupa actualmente esa direccion en cache
+        int estadoBloqEnCache = getEstBloqueCache(dirBloqCache);  // Estado del bloque que ocupa esa dir de cache ('M', 'C', 'I')
+        //int estadoBloqEnCache = estCache[dirBloqCache][EST];    // Estado del bloque que ocupa esa dir de cache ('M', 'C', 'I')
         int dirNumBloqMem = numBloqMem*4;
  
         //CASO 1: el bloque que requerimos no esta en cache, en su lugar hay otro bloque
         if(idBloqEnCache != dirNumBloqMem){
             if(idBloqEnCache == -1){
                 cargarACache(dirNumBloqMem, dirBloqCache);
-                estCache[dirBloqCache][ID] = dirNumBloqMem;     // Bloque que ocupa ahora esa direccion de cache
-                estCache[dirBloqCache][EST] = C;                // Estado del bloque que ocupa ahora esa direccion de cache
+                setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+                setEstBloqueCache(dirBloqCache, C);
+                //estCache[dirBloqCache][ID] = dirNumBloqMem;     // Bloque que ocupa ahora esa direccion de cache
+                //estCache[dirBloqCache][EST] = C;                // Estado del bloque que ocupa ahora esa direccion de cache
             }else{
                 switch(estadoBloqEnCache){
                     case C:
                         // Nos traemos el bloque de memoria a cache
                         cargarACache(dirNumBloqMem, dirBloqCache);
-                        estCache[dirBloqCache][ID] = dirNumBloqMem;     // Bloque que ocupa ahora esa direccion de cache
-                        estCache[dirBloqCache][EST] = C;                // Estado del bloque que ocupa ahora esa direccion de cache
+                        setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+                        setEstBloqueCache(dirBloqCache, C);
+                        //estCache[dirBloqCache][ID] = dirNumBloqMem;     // Bloque que ocupa ahora esa direccion de cache
+                        //estCache[dirBloqCache][EST] = C;                // Estado del bloque que ocupa ahora esa direccion de cache
                     break;
                     case M:
-                        guardarEnMemoria(estCache[dirBloqCache][ID], dirBloqCache);   // Creo que esos son los parámetros correctos. -Érick
-                        estCache[dirBloqCache][EST] = C;
+                        guardarEnMemoria(getIdBloqueCache(dirBloqCache), dirBloqCache);   // Creo que esos son los parámetros correctos. -Érick
+                        //guardarEnMemoria(estCache[dirBloqCache][ID], dirBloqCache);   // Creo que esos son los parámetros correctos. -Érick
+                        
+                        setEstBloqueCache(dirBloqCache, C);
+                        //estCache[dirBloqCache][EST] = C;
                         cargarACache(dirNumBloqMem, dirBloqCache);
-                        estCache[dirBloqCache][ID] = dirNumBloqMem;         // Bloque que ocupa ahora esa direccion de cache
-                        estCache[dirBloqCache][EST] = C;                    // Estado del bloque que ocupa ahora esa direccion de cache
+                        
+                        setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+                        setEstBloqueCache(dirBloqCache, C);
+                        //estCache[dirBloqCache][ID] = dirNumBloqMem;         // Bloque que ocupa ahora esa direccion de cache
+                        //estCache[dirBloqCache][EST] = C;                    // Estado del bloque que ocupa ahora esa direccion de cache
                     break;
                     case I:
                         //cargarACache(dirNumBloqMem, dirBloqCache);
@@ -195,16 +276,20 @@ public class Procesador extends Thread {
                 break;
                 case M:
                     guardarEnMemoria(dirNumBloqMem, dirBloqCache);
-                    estCache[dirBloqCache][EST] = M;    // Estado del bloque que ocupa ahora esa direccion de cache
+                    setEstBloqueCache(dirBloqCache, M);
+                    //estCache[dirBloqCache][EST] = M;    // Estado del bloque que ocupa ahora esa direccion de cache
                 break;
                 case I:
                     //previsto para los directorios, por el momento no puede estar invalido
                 break;
             }
         }
-        dcache[dirBloqCache][numPalabra] = regs[X];
-        estCache[dirBloqCache][ID] = dirNumBloqMem; // Bloque que ocupa ahora esa direccion de cache
-        estCache[dirBloqCache][EST] = M;            // Estado del bloque que ocupa ahora esa direccion de cache
+        setPalabraCache(dirBloqCache,numPalabra, regs[X]);
+        //dcache[dirBloqCache][numPalabra] = regs[X];
+        setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+        setEstBloqueCache(dirBloqCache, M);
+        //estCache[dirBloqCache][ID] = dirNumBloqMem; // Bloque que ocupa ahora esa direccion de cache
+        //estCache[dirBloqCache][EST] = M;            // Estado del bloque que ocupa ahora esa direccion de cache
     }
     
     //RX, ETIQ
@@ -385,15 +470,18 @@ public class Procesador extends Thread {
         estado += "\n";
         estado += "La memoria cache contiene:\n";
         for(int i = 0; i < 4; i++){
-            estado+="Bloque "+i+", estado: "+estCache[i][EST]+", idBloque: "+estCache[i][ID]+" --> ";
+            estado+="Bloque "+i+", estado: "+getEstBloqueCache(i)+", idBloque: "+getIdBloqueCache(i)+" --> ";
+            //estado+="Bloque "+i+", estado: "+estCache[i][EST]+", idBloque: "+estCache[i][ID]+" --> ";
             for(int j= 0; j < 4; j++){
-                 estado += dcache[i][j]+ ", ";
+                 estado += getPalabraCache(i,j) + ", ";
+                 //estado += dcache[i][j]+ ", ";
             }
             estado += "\n";
         }
         estado += "La memoria de datos contiene:\n";
         for(int i = 0; i < 32; i++){
-            estado += dmem[i]+", ";
+            estado += getPalabraMem(i)+", ";
+            //estado += dmem[i]+", ";
         }
         estado += "\n";
         estado += "La cantidad de ciclos que tardó el hilo es: "+cont+"\n";
