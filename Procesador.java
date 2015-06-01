@@ -27,6 +27,7 @@ public class Procesador extends Thread {
     private final int C = 0;
     private final int M = 1;
     private final int I = 2;
+    private final int U = 3;
     
     private int PC;                             // Contador de programa
     private int IR;                             // Registro de instruccion
@@ -147,6 +148,32 @@ public class Procesador extends Thread {
         //System.out.println("Ya puede cambiar de instrucción.");
     }
     
+    public void pedirParaLeer(int idBloque, int direccionMemoria, int direccionCache){
+        int papa = estr.directorioPapa(idBloque); //1, 2, 3
+        int estado = estr.getEstadoBloqueDir(idBloque); // 'C', 'M', 'U'
+        //int duenoBloque = estr.consultarDuenoBloqueDir(myNumP,idBloque);
+        switch(estado){
+            case C:
+                //estr.cargarACache(int numCache, int direccionMemoria, int direccionCache);
+                cargarACache(direccionMemoria, direccionCache);
+                estr.anadirCompartidos(idBloque, myNumP);
+                // cargo el bloque en mi cache desde memoria
+                // agregarme a la lista de compartidos
+            break;
+            case M:
+                int idDueno = estr.consultarDuenoBloqueDir(idBloque);
+                estr.guardarEnMemoria(idDueno, direccionMemoria, direccionCache);    // hasta aqui llegamos 
+                // subir lo de la cache dueña en memoria
+                // poner el directorio como compartido
+                // bajar lo de memoria a cache
+                // agregar en la lista de compartidos
+            break;
+            case U:
+                
+            break; 
+        }
+    }
+    
     // Leer una palabra
     public void LW(int Y, int X, int n){
         int numByte = regs[Y]+n;                                // Numero del byte que quiero leer de memoria 
@@ -192,7 +219,19 @@ public class Procesador extends Thread {
                         //estCache[dirBloqCache][EST] = C;                    // Estado del bloque que ocupa ahora esa direccion de cache
                     break;
                     case I:
-                        // Previsto para los directorios, por el momento no puede estar invalido
+                        // Buscar dueño 
+                        //pedirParaLeer(dirNumBloqMem);
+                        
+                        // Busco el estado del bloque en la cache del dueño 
+                        // Pido bloque para leer
+                        // caso 'C': 
+                            // cargo el bloque en mi cache desde memoria
+                            // agregarme a la lista de compartidos
+                        // caso 'M': 
+                            // subir lo de la cache dueña en memoria
+                            // poner el directorio como compartido
+                            // bajar lo de memoria a cache
+                            // agregar en la lista de compartidos
                     break;
                 }
             }
@@ -208,6 +247,9 @@ public class Procesador extends Thread {
                 break;
                 case I:
                     // Previsto para los directorios, por el momento no puede estar invalido
+                    // busco el dueño
+                    // le pido que escriba a mem 
+                    // lo pido para leer
                 break;
             }
         }

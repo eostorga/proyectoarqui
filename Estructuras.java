@@ -32,15 +32,15 @@ public class Estructuras {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     //DIRECTORIOS
     
-    // ID|EST|P1|P2|P3
+    // B|E|P1|P2|P3
     // 8 BLOQUES
     private int dir1[][] = new int[8][5];
     
-    // ID|EST|P1|P2|P3
+    // B|E|P1|P2|P3
     // 8 BLOQUES
     private int dir2[][] = new int[8][5];
     
-    // ID|EST|P1|P2|P3
+    // B|E|P1|P2|P3
     // 8 BLOQUES
     private int dir3[][] = new int[8][5];
     
@@ -68,14 +68,13 @@ public class Estructuras {
         inicializarCaches();
     }
     
-    /*
-    public void inicializarDir(){
+    public void inicializarDirs(){
         for(int i = 0; i < 32; i+=4){
-            dir[0][i][B] = i;
-            dir[1][i][B] = 32+i;
-            dir[2][i][B] = 64+i;
+            dir1[i][B] = i;
+            dir2[i][B] = 32+i;
+            dir3[i][B] = 64+i;
         }
-    }*/
+    }
     
     public void inicializarCaches(){
         for(int i =0; i < 4; ++i){
@@ -188,7 +187,150 @@ public class Estructuras {
     public int getPalabraMem(int numCache, int indiceMem){
         return smem [indiceMem];
     }
+    
+    public void setEntradaDir(int numDir, int indiceDir, int entrada, int valor){
+        switch(numDir){
+            case 1:
+                dir1[indiceDir][entrada] = valor ;
+            break;
+            case 2:
+                dir2[indiceDir][entrada] = valor ;
+            break;
+            case 3:
+                dir3[indiceDir][entrada] = valor ;
+            break;
+        }
+    }
+    
+    public int getEntradaDir(int numDir, int indiceDir, int entrada){
+        int salida = -1;
+        switch(numDir){
+            case 1:
+                salida = dir1[indiceDir][entrada];
+            break;
+            case 2:
+                salida = dir2[indiceDir][entrada];
+            break;
+            case 3:
+                salida = dir3[indiceDir][entrada];
+            break;
+        }
+        return salida;
+    }
+    
     //FIN DE LA SECCION DE SETS Y GETS
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////  
+    
+    // ESTE METODO DEVUELVE EL ESTADO EN EL DIRECTORIO DE UN BLOQUE CON ID = DIR MEM BLOQUE
+    // REQUIERE: ID DEL BLOQUE NADA MAS
+    // DEVUELVE: 'C', 'M', 'U'
+    public int getEstadoBloqueDir(int idBloque){
+        int indiceDir, estado = -1;
+        if(idBloque >= 0 && idBloque <=31){
+            indiceDir = idBloque/4;
+            estado = getEntradaDir(1,indiceDir,E);
+        }
+        if(idBloque >= 32 && idBloque <=63){
+            // |32|36|40|44|48|52|56|60|
+            indiceDir = (idBloque-32)/4;
+            estado = getEntradaDir(2,indiceDir,E);
+        }
+        if(idBloque >= 64 && idBloque <=95){
+            indiceDir = (idBloque-64)/4;
+            estado = getEntradaDir(3,indiceDir,E);
+        }
+        return estado;
+    }
+    
+    //ESTE METODO DEVUELVE EL DIRECTORIO CASA DE UN BLOQUE DE MEMORIA
+    //REQUIERE: EL ID DEL BLOQUE EN MEMORIA
+    //DEVUELVE: 1, 2, 3
+    public int directorioPapa(int idBloque){
+        int papa = -1; 
+        if(idBloque >= 0 && idBloque <=31){
+            papa = 1;
+        }
+        if(idBloque >= 32 && idBloque <=63){
+            papa = 2;
+        }
+        if(idBloque >= 64 && idBloque <=95){
+            papa = 3;
+        }
+        return papa;
+    }
+    
+    //ESTE METODO DEVUELVE CUAL PROCESADOR TIENE EL BLOQUE EN CASO DE QUE ESTE MODIFICADO
+    //REQUIERE: EL ID DEL BLOQUE EN MEM
+    //DEVUELVE; 1, 2, 3
+    public int consultarDuenoBloqueDir(int idBloque){
+        int dueno = -1;
+        int indiceDir;
+        if(idBloque >= 0 && idBloque <=31){
+            indiceDir = idBloque/4;
+            if(getEntradaDir(1,indiceDir,E)== 'M'){
+                if(getEntradaDir(1,indiceDir,P1)== '1') dueno = 1;
+                else if(getEntradaDir(1,indiceDir,P2)== '1') dueno = 2;
+                else if(getEntradaDir(1,indiceDir,P3)== '1') dueno = 3;
+            }
+        }
+        if(idBloque >= 32 && idBloque <=63){
+            // |32|36|40|44|48|52|56|60|
+            indiceDir = (idBloque-32)/4;
+            if(getEntradaDir(2,indiceDir,E)== 'M'){
+                if(getEntradaDir(2,indiceDir,P1)== '1') dueno = 1;
+                else if(getEntradaDir(2,indiceDir,P2)== '1') dueno = 2;
+                else if(getEntradaDir(2,indiceDir,P3)== '1') dueno = 3;
+            }
+        }
+        if(idBloque >= 64 && idBloque <=95){
+            indiceDir = (idBloque-64)/4;
+            if(getEntradaDir(3,indiceDir,E)== 'M'){
+                if(getEntradaDir(3,indiceDir,P1)== '1') dueno = 1;
+                else if(getEntradaDir(3,indiceDir,P2)== '1') dueno = 2;
+                else if(getEntradaDir(3,indiceDir,P3)== '1') dueno = 3;
+            }
+        }
+        return dueno;
+    }
+    
+    public void cargarACache(int numCache, int direccionMemoria, int direccionCache){
+        int j = direccionMemoria;
+        for(int i = 0; i < 4; i++){
+            setPalabraCache(numCache, direccionCache, i, getPalabraMem(numCache, j));
+            j++;
+        }
+    }
+    
+    public void guardarEnMemoria(int numCache, int direccionMemoria, int direccionCache){
+        int j = direccionMemoria;
+        for(int i = 0; i < 4; i++){
+            setPalabraMem(numCache, j, getPalabraCache(numCache, direccionCache, i));
+            j++;
+        }
+     }
+   
+    // ESTE METODO RECIBE EL DIRDUEÑO, PROCESADOR, IDBLOQUE
+    // LO QUE HACE ES PONER PARA EL INDICE BLOQUE EN EL DIR, PONER UN 1 EN LA COLUMNA CORRESPONDIENTE A PROCESADOR
+    public void anadirCompartidos(int idBloque, int proce){
+        int indiceDir; 
+        if(idBloque >= 0 && idBloque <=31){
+            indiceDir = idBloque/4;
+            if(proce == 1) setEntradaDir(1, indiceDir, P1, 1);
+            if(proce == 2) setEntradaDir(1, indiceDir, P2, 1);
+            if(proce == 3) setEntradaDir(1, indiceDir, P3, 1);
+        }
+        if(idBloque >= 32 && idBloque <=63){
+            indiceDir = (idBloque-32)/4;
+            if(proce == 1) setEntradaDir(2, indiceDir, P1, 1);
+            if(proce == 2) setEntradaDir(2, indiceDir, P2, 1);
+            if(proce == 3) setEntradaDir(2, indiceDir, P3, 1);
+        }
+        if(idBloque >= 64 && idBloque <=95){
+            indiceDir = (idBloque-64)/4;
+            if(proce == 1) setEntradaDir(3, indiceDir, P1, 1);
+            if(proce == 2) setEntradaDir(3, indiceDir, P2, 1);
+            if(proce == 3) setEntradaDir(3, indiceDir, P3, 1);
+        }
+    }
     
 }

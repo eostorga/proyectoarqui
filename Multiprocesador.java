@@ -100,6 +100,22 @@ public class Multiprocesador {
         sim.setEstadisticas(proc1.verEstado());
     }
     
+    public int pedirParaLeer(int numP, int idBloque){
+        int duenoBloque = estructura.consultarDuenoBloqueDir(numP,idBloque);
+        switch(duenoBloque){
+            case 1:
+                
+            break;
+            case 2:
+                
+            break;
+            case 3:
+                
+            break;
+        }
+        return 0; 
+    }
+    
     /**
      * @param args the command line arguments
      */
