@@ -5,11 +5,22 @@
  */
 package proy_arqui;
 
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Iva
  */
-public class Estructuras {
+public class Estructuras { 
+    
+    Semaphore SemaforoDir1 = new Semaphore(1);
+    Semaphore SemaforoDir2 = new Semaphore(1);
+    Semaphore SemaforoDir3 = new Semaphore(1);
+    Semaphore SemaforoCache1 = new Semaphore(1);
+    Semaphore SemaforoCache2 = new Semaphore(1);
+    Semaphore SemaforoCache3 = new Semaphore(1);
     
     private final int ID = 0;
     private final int EST = 1;
@@ -86,6 +97,188 @@ public class Estructuras {
             setIdBloqueCache(3, i, I);
         }
     }
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //uso de los semaforos
+    
+    public void waitD(int numDir){
+        switch(numDir){
+            case 1:
+            {
+                try {
+                    SemaforoDir1.acquire();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case 2:
+            {
+                try {
+                    SemaforoDir2.acquire();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case 3:
+            {
+                try {
+                    SemaforoDir3.acquire();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+    
+    public void signalD(int numDir){
+        switch(numDir){
+            case 1:
+            {
+                try {
+                    SemaforoDir1.release();
+                } catch (Exception ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case 2:
+            {
+                try {
+                    SemaforoDir2.release();
+                } catch (Exception ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case 3:
+            {
+                try {
+                    SemaforoDir3.release();
+                } catch (Exception ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+    
+    public int disponibleD(int numDir){
+        int result = 0;
+        switch(numDir){
+            case 1:
+            {
+                try {
+                    result = SemaforoDir1.availablePermits();
+                } catch (Exception ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case 2:
+            {
+                try {
+                    result = SemaforoDir2.availablePermits();
+                } catch (Exception ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case 3:
+            {
+                try {
+                    result = SemaforoDir3.availablePermits();
+                } catch (Exception ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return result;
+    }
+    
+    public void waitC(int numCach){
+        switch(numCach){
+            case 1:
+            {
+                try {
+                    SemaforoCache1.acquire();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case 2:
+            {
+                try {
+                    SemaforoCache2.acquire();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case 3:
+            {
+                try {
+                    SemaforoCache3.acquire();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+    
+    public void signalC(int numCach){
+        switch(numCach){
+            case 1:
+            {
+                try {
+                    SemaforoCache1.release();
+                } catch (Exception ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case 2:
+            {
+                try {
+                    SemaforoCache2.release();
+                } catch (Exception ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case 3:
+            {
+                try {
+                    SemaforoCache3.release();
+                } catch (Exception ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+    
+    public int disponibleC(int numCach){
+        int result = 0;
+        switch(numCach){
+            case 1:
+            {
+                try {
+                    result = SemaforoCache1.availablePermits();
+                } catch (Exception ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case 2:
+            {
+                try {
+                    result = SemaforoCache2.availablePermits();
+                } catch (Exception ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case 3:
+            {
+                try {
+                    result = SemaforoCache3.availablePermits();
+                } catch (Exception ex) {
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return result;
+    }
+    
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //SECCION DE SETS Y GETS, NO IMPORTA DE DONDE VENGA LA MEMORIA Y CACHE, LOS CAMBIOS
@@ -293,6 +486,8 @@ public class Estructuras {
         return dueno;
     }
     
+    
+    
     public void cargarACache(int numCache, int direccionMemoria, int direccionCache){
         int j = direccionMemoria;
         for(int i = 0; i < 4; i++){
@@ -311,7 +506,7 @@ public class Estructuras {
    
     // ESTE METODO RECIBE EL DIRDUEÑO, PROCESADOR, IDBLOQUE
     // LO QUE HACE ES PONER PARA EL INDICE BLOQUE EN EL DIR, PONER UN 1 EN LA COLUMNA CORRESPONDIENTE A PROCESADOR
-    public void anadirCompartidos(int idBloque, int proce){
+    public void anadirProcesador(int idBloque, int proce){
         int indiceDir; 
         if(idBloque >= 0 && idBloque <=31){
             indiceDir = idBloque/4;
@@ -332,5 +527,28 @@ public class Estructuras {
             if(proce == 3) setEntradaDir(3, indiceDir, P3, 1);
         }
     }
+    
+    public void quitarCompartidos(int idBloque){
+        int indiceDir; 
+        if(idBloque >= 0 && idBloque <=31){
+            indiceDir = idBloque/4;
+            setEntradaDir(1, indiceDir, P1, 0);
+            setEntradaDir(1, indiceDir, P2, 0);
+            setEntradaDir(1, indiceDir, P3, 0);
+        }
+        if(idBloque >= 32 && idBloque <=63){
+            indiceDir = (idBloque-32)/4;
+            setEntradaDir(2, indiceDir, P1, 0);
+            setEntradaDir(2, indiceDir, P2, 0);
+            setEntradaDir(2, indiceDir, P3, 0);
+        }
+        if(idBloque >= 64 && idBloque <=95){
+            indiceDir = (idBloque-64)/4;
+            setEntradaDir(3, indiceDir, P1, 0);
+            setEntradaDir(3, indiceDir, P2, 0);
+            setEntradaDir(3, indiceDir, P3, 0);
+        }
+    }
+    
     
 }
