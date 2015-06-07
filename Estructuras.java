@@ -528,6 +528,28 @@ public class Estructuras {
         }
     }
     
+    public void quitarProcesador(int idBloque, int proce){
+        int indiceDir; 
+        if(idBloque >= 0 && idBloque <=31){
+            indiceDir = idBloque/4;
+            if(proce == 1) setEntradaDir(1, indiceDir, P1, 0);
+            if(proce == 2) setEntradaDir(1, indiceDir, P2, 0);
+            if(proce == 3) setEntradaDir(1, indiceDir, P3, 0);
+        }
+        if(idBloque >= 32 && idBloque <=63){
+            indiceDir = (idBloque-32)/4;
+            if(proce == 1) setEntradaDir(2, indiceDir, P1, 0);
+            if(proce == 2) setEntradaDir(2, indiceDir, P2, 0);
+            if(proce == 3) setEntradaDir(2, indiceDir, P3, 0);
+        }
+        if(idBloque >= 64 && idBloque <=95){
+            indiceDir = (idBloque-64)/4;
+            if(proce == 1) setEntradaDir(3, indiceDir, P1, 0);
+            if(proce == 2) setEntradaDir(3, indiceDir, P2, 0);
+            if(proce == 3) setEntradaDir(3, indiceDir, P3, 0);
+        }
+    }
+    
     public void quitarCompartidos(int idBloque){
         int indiceDir; 
         if(idBloque >= 0 && idBloque <=31){
