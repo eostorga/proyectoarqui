@@ -279,7 +279,7 @@ public class Procesador extends Thread {
                     break;
             }
         } else { // Caso II: esa posicion de cache esta vacia o hay otro bloque
-        // El id del bloque que esta ocupando cache es -1 (no hay bloque) o es otro bloque
+            // El id del bloque que esta ocupando cache es -1 (no hay bloque) o es otro bloque
             if(idBloqEnCache!=-1 && estadoBloqEnCache==M){
                 if (estr.disponibleD(estr.directorioPapa(numBloqMem)) == 0) { // esto es para saber si el directorio que voy a utilizar esta ocupado o no
                         estr.signalC(myNumP);
@@ -302,19 +302,12 @@ public class Procesador extends Thread {
                         LW(Y, X, n);
                     } else {
                         estr.waitD(estr.directorioPapa(idBloqEnCache));
+                        estr.quitarProcesador(idBloqEnCache, myNumP);
+                        estr.verificarUncached(idBloqEnCache);
+                        estr.signalD(estr.directorioPapa(idBloqEnCache));
                         
-                        if (estr.disponibleD(estr.directorioPapa(numBloqMem)) == 0) { // esto es para saber si el directorio que voy a utilizar esta ocupado o no
-                            estr.signalC(myNumP);
-                            LW(Y, X, n);
-                        } else {
-                            estr.waitD(estr.directorioPapa(numBloqMem));
-                            guardarEnMemoria(getIdBloqueCache(dirBloqCache), dirBloqCache);
-                            setEstDir(estr.directorioPapa(numBloqMem), numBloqMem, C); //pero tengo q poner para quienes esta C
-                            estr.anadirProcesador(numBloqMem, myNumP);
-                            regs[X] = getPalabraCache(dirBloqCache, numPalabra);     // Carga la palabra que se ocupa al registro
-                            estr.signalC(myNumP);
-                            estr.signalD(estr.directorioPapa(numBloqMem));
-                        }
+                        setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+                        setEstBloqueCache(dirBloqCache, I);
                     }
                     // Si está compartido solo queda cargar la palabra al registro
                     break;

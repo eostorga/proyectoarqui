@@ -550,6 +550,22 @@ public class Estructuras {
         }
     }
     
+    public void verificarUncached(int idBloque){
+        int indiceDir; 
+        if(idBloque >= 0 && idBloque <=31){
+            indiceDir = idBloque/4;
+            if(getEntradaDir(1, indiceDir, P1)==0 && getEntradaDir(1, indiceDir, P2)==0 && getEntradaDir(1, indiceDir, P3)==0) setEntradaDir(1, indiceDir, E, U); 
+        }
+        if(idBloque >= 32 && idBloque <=63){
+            indiceDir = (idBloque-32)/4;
+            if(getEntradaDir(2, indiceDir, P1)==0 && getEntradaDir(2, indiceDir, P2)==0 && getEntradaDir(2, indiceDir, P3)==0) setEntradaDir(2, indiceDir, E, U); 
+        }
+        if(idBloque >= 64 && idBloque <=95){
+            indiceDir = (idBloque-64)/4;
+            if(getEntradaDir(3, indiceDir, P1)==0 && getEntradaDir(3, indiceDir, P2)==0 && getEntradaDir(3, indiceDir, P3)==0) setEntradaDir(3, indiceDir, E, U); 
+        }
+    }
+    
     public void quitarCompartidos(int idBloque){
         int indiceDir; 
         if(idBloque >= 0 && idBloque <=31){
