@@ -566,25 +566,70 @@ public class Estructuras {
         }
     }
     
-    public void quitarCompartidos(int idBloque){
+    public void quitarCompartidos(int idBloque, int proc){
         int indiceDir; 
         if(idBloque >= 0 && idBloque <=31){
             indiceDir = idBloque/4;
-            setEntradaDir(1, indiceDir, P1, 0);
-            setEntradaDir(1, indiceDir, P2, 0);
-            setEntradaDir(1, indiceDir, P3, 0);
+            if(proc != 1 && getEntradaDir(1, indiceDir, P1) == 1){
+                setEntradaDir(1, indiceDir, P1, 0);
+                waitC(1);
+                setEstBloqueCache(1, (idBloque%4), I);
+                signalC(1);
+            }
+            if(proc != 2 && getEntradaDir(1, indiceDir, P2) == 1){
+                setEntradaDir(1, indiceDir, P2, 0);
+                waitC(2);
+                setEstBloqueCache(2, (idBloque%4), I);
+                signalC(2);
+            }
+            if(proc != 3 && getEntradaDir(1, indiceDir, P3) == 1){
+                setEntradaDir(1, indiceDir, P3, 0);
+                waitC(3);
+                setEstBloqueCache(3, (idBloque%4), I);
+                signalC(3);
+            }
         }
         if(idBloque >= 32 && idBloque <=63){
             indiceDir = (idBloque-32)/4;
-            setEntradaDir(2, indiceDir, P1, 0);
-            setEntradaDir(2, indiceDir, P2, 0);
-            setEntradaDir(2, indiceDir, P3, 0);
+            if(proc != 1 && getEntradaDir(2, indiceDir, P1) == 1){
+                setEntradaDir(2, indiceDir, P1, 0);
+                waitC(1);
+                setEstBloqueCache(1, (idBloque%4), I);
+                signalC(1);
+            }
+            if(proc != 2 && getEntradaDir(2, indiceDir, P2) == 1){
+                setEntradaDir(2, indiceDir, P2, 0);
+                waitC(2);
+                setEstBloqueCache(2, (idBloque%4), I);
+                signalC(2);
+            }
+            if(proc != 3 && getEntradaDir(2, indiceDir, P3) == 1){
+                setEntradaDir(2, indiceDir, P3, 0);
+                waitC(3);
+                setEstBloqueCache(3, (idBloque%4), I);
+                signalC(3);
+            }
         }
         if(idBloque >= 64 && idBloque <=95){
             indiceDir = (idBloque-64)/4;
-            setEntradaDir(3, indiceDir, P1, 0);
-            setEntradaDir(3, indiceDir, P2, 0);
-            setEntradaDir(3, indiceDir, P3, 0);
+            if(proc != 1 && getEntradaDir(3, indiceDir, P1) == 1){
+                setEntradaDir(3, indiceDir, P1, 0);
+                waitC(1);
+                setEstBloqueCache(1, (idBloque%4), I);
+                signalC(1);
+            }
+            if(proc != 2 && getEntradaDir(3, indiceDir, P2) == 1){
+                setEntradaDir(3, indiceDir, P2, 0);
+                waitC(2);
+                setEstBloqueCache(2, (idBloque%4), I);
+                signalC(2);
+            }
+            if(proc != 3 && getEntradaDir(3, indiceDir, P3) == 1){
+                setEntradaDir(3, indiceDir, P3, 0);
+                waitC(3);
+                setEstBloqueCache(3, (idBloque%4), I);
+                signalC(3);
+            }
         }
     }
     
