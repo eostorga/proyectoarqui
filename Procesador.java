@@ -205,8 +205,169 @@ public class Procesador extends Thread
                 break;
         }
     }
+    
+    public void LW(int Y, int X, int n)
+    {
+        int numByte = regs[Y] + n;                                  // Numero del byte que quiero leer de memoria 
+        int numBloqMem = Math.floorDiv(numByte, 16);                // Indice del bloque en memoria (0-24)
+        int numPalabra = (numByte % 16) / 4;
+        int dirBloqCache = numBloqMem % 4;                          // Indice donde debe estar el bloque en cache
+        int idBloqEnCache = getIdBloqueCache(dirBloqCache);         // ID del bloque que ocupa actualmente esa direccion en cache
+        int estadoBloqEnCache = getEstBloqueCache(dirBloqCache);    // Estado del bloque que ocupa esa dir de cache ('M', 'C', 'I')
+        int dirNumBloqMem = numBloqMem * 4;                         // Conversion para mapear la direccion inicial del bloque en memoria
 
-    // LEER UNA PALABRA
+        // BLOQUEO MI CACHÉ
+        estr.waitC(myNumP);
+        
+        //CASO 1: HAY OTRO BLOQUE DIFERENTE PERO VÁLIDO
+        if(idBloqEnCache != dirNumBloqMem && idBloqEnCache != -1)
+        {
+            switch(estadoBloqEnCache)
+            {
+                case C:
+                    // Para saber si el directorio que voy a utilizar esta ocupado o no
+                    if (estr.disponibleD(estr.directorioPapa(idBloqEnCache)) == 0)
+                    {
+                        estr.signalC(myNumP);
+                        LW(Y, X, n);
+                    } else
+                    {
+                        estr.waitD(estr.directorioPapa(idBloqEnCache));
+                        
+                        // USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        
+                        estr.quitarProcesador(idBloqEnCache, myNumP);
+                        estr.verificarUncached(idBloqEnCache);
+                        estr.signalD(estr.directorioPapa(idBloqEnCache));
+                        setEstBloqueCache(dirBloqCache, I);
+                    }
+                break;
+                case M:
+                    if (estr.disponibleD(estr.directorioPapa(idBloqEnCache)) == 0)
+                    {
+                        estr.signalC(myNumP);
+                        LW(Y, X, n);
+                    } else
+                    {
+                        estr.waitD(estr.directorioPapa(idBloqEnCache));
+                        
+                        // USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        
+                        guardarEnMemoria(idBloqEnCache, dirBloqCache);
+                        setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, U); //pero tengo q poner para quienes esta C
+                        estr.quitarProcesador(idBloqEnCache, myNumP);                        
+                        estr.signalD(estr.directorioPapa(idBloqEnCache));
+                        setEstBloqueCache(dirBloqCache, I);
+                    }
+                break;
+                case I:
+                    setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+                    setEstBloqueCache(dirBloqCache, I);
+                break;
+            }
+            // CARGAR EL NUEVO BLOQUE (NO LO HACÍA NUNCA ESTE IF GRANDE)
+            cargarACache(dirNumBloqMem, dirBloqCache);
+            setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+            setEstBloqueCache(dirBloqCache, C);
+            // PARA AÑADIRME DEBERÍA SOLICITAR EL DIRECTORIO
+            estr.anadirProcesador(dirNumBloqMem, myNumP);
+                        
+            // CARGA LA PALABRA QUE SE OCUPA AL REGISTRO
+            regs[X] = getPalabraCache(dirBloqCache, numPalabra);
+                        
+            // TIENE QUE ACTUALIZAR EL DIRECTORIO DE ESTE BLOQUE A COMPARTIDO                        
+            estr.signalC(myNumP);
+        }
+        
+        //CASO 2: ESTÁ EL BLOQUE BLOQUE (HIT) O NO HAY NINGUNO
+        if(idBloqEnCache == dirNumBloqMem || idBloqEnCache == -1)
+        {
+            switch(estadoBloqEnCache)
+            {
+                case C:
+                    // Carga la palabra que se ocupa al registro
+                    regs[X] = getPalabraCache(dirBloqCache, numPalabra);
+                    estr.signalC(myNumP);
+                break;
+                case M:
+                    if (estr.disponibleD(estr.directorioPapa(idBloqEnCache)) == 0)
+                    {
+                        estr.signalC(myNumP);
+                        LW(Y, X, n);
+                    } else
+                    {
+                        estr.waitD(estr.directorioPapa(idBloqEnCache));
+                        guardarEnMemoria(getIdBloqueCache(dirBloqCache), dirBloqCache);
+                        setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, C);
+                        estr.anadirProcesador(idBloqEnCache, myNumP);       
+                        // Carga la palabra que se ocupa al registro
+                        regs[X] = getPalabraCache(dirBloqCache, numPalabra);
+                        estr.signalC(myNumP);
+                        estr.signalD(estr.directorioPapa(idBloqEnCache));
+                    }
+                break;
+                case I:
+                    if (estr.disponibleD(estr.directorioPapa(idBloqEnCache)) == 0)
+                    {
+                        estr.signalC(myNumP);
+                        LW(Y, X, n);
+                    } else
+                    {
+                        estr.waitD(estr.directorioPapa(idBloqEnCache));
+                        if (estr.getEstadoBloqueDir(numBloqMem) == C)
+                        {
+                            cargarACache(dirNumBloqMem, dirBloqCache);
+                            setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+                            setEstBloqueCache(dirBloqCache, C);
+                            estr.anadirProcesador(idBloqEnCache, myNumP);
+                            // Carga la palabra que se ocupa al registro
+                            regs[X] = getPalabraCache(dirBloqCache, numPalabra);
+                            estr.signalD(estr.directorioPapa(numBloqMem));
+                            estr.signalC(myNumP);
+                        } else if (estr.getEstadoBloqueDir(numBloqMem) == M)
+                        {
+                            int cacheDuena = estr.consultarDuenoBloqueDir(numBloqMem);
+                            if (estr.disponibleC(cacheDuena) == 0)
+                            {
+                                estr.signalC(myNumP);
+                                estr.signalD(estr.directorioPapa(numBloqMem));
+                                LW(Y, X, n);
+                            } else
+                            {
+                                estr.waitC(cacheDuena);  //si la logro agarrar
+                                estr.guardarEnMemoria(cacheDuena, numBloqMem, dirBloqCache);
+                                estr.setEstBloqueCache(cacheDuena, numBloqMem, C);
+                                estr.signalC(cacheDuena);
+                                setEstDir(estr.directorioPapa(numBloqMem), numBloqMem, C);
+                                //Pero tengo que poner para quiénes esta C
+                                cargarACache(dirNumBloqMem, dirBloqCache);
+                                setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+                                setEstBloqueCache(dirBloqCache, C);
+                                estr.anadirProcesador(numBloqMem, myNumP);
+                                // Carga la palabra que se ocupa al registro
+                                regs[X] = getPalabraCache(dirBloqCache, numPalabra);
+                                estr.signalC(myNumP);
+                                estr.signalD(estr.directorioPapa(numBloqMem));
+                            }
+                        } else
+                        {
+                            estr.cargarACache(myNumP, dirNumBloqMem, dirBloqCache);
+                            setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+                            setEstBloqueCache(dirBloqCache, C);
+                            setEstDir(estr.directorioPapa(numBloqMem), numBloqMem, C);
+                            estr.anadirProcesador(numBloqMem, myNumP);
+                            // Carga la palabra que se ocupa al registro
+                            regs[X] = getPalabraCache(dirBloqCache, numPalabra);
+                            estr.signalC(myNumP);
+                            estr.signalD(estr.directorioPapa(numBloqMem));
+                        }
+                    }
+                break;
+            }   
+        } 
+    }
+
+    /*// LEER UNA PALABRA
     public void LW(int Y, int X, int n)
     {
         int numByte = regs[Y] + n;                                  // Numero del byte que quiero leer de memoria 
@@ -330,8 +491,8 @@ public class Procesador extends Thread
                 break;
             }   
         } 
-    }
-
+    }*/    
+    
     // Escribir una palabra
     //SW RX, n(RY)
     //M(n + (Ry))  Rx
