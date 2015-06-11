@@ -85,11 +85,11 @@ public class Estructuras
         for(int i = 0; i < 32; i+=4)
         {
             dir1[i][B] = i;
-            dir1[i][E] = U;
+            dir1[i][E] = M;
             dir2[i][B] = 32+i;
-            dir2[i][E] = U;
+            dir2[i][E] = M;
             dir3[i][B] = 64+i;
-            dir3[i][E] = U;
+            dir3[i][E] = M;
         }
     }
     
@@ -99,13 +99,10 @@ public class Estructuras
         {
             setEstBloqueCache(1, i, I);
             setIdBloqueCache(1, i, -1);
-            //setIdBloqueCache(1, i, I);
             setEstBloqueCache(2, i, I);
             setIdBloqueCache(2, i, -1);
-            //setIdBloqueCache(2, i, I);
             setEstBloqueCache(3, i, I);
             setIdBloqueCache(3, i, -1);
-            //setIdBloqueCache(3, i, I);
         }
     }
     
