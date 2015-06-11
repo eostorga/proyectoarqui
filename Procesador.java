@@ -219,6 +219,7 @@ public class Procesador extends Thread
         // BLOQUEO MI CACHÉ
         estr.waitC(myNumP);
         
+        //Algunas veces se mete en este caso, otras no. 
         //CASO 1: HAY OTRO BLOQUE DIFERENTE PERO VÁLIDO
         if(idBloqEnCache != dirNumBloqMem && idBloqEnCache != -1)
         {
@@ -237,8 +238,10 @@ public class Procesador extends Thread
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //
                         
                         estr.quitarProcesador(idBloqEnCache, myNumP);
-                        estr.verificarUncached(idBloqEnCache);
+                        estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
+                        
+                        setIdBloqueCache(dirBloqCache, dirNumBloqMem);
                         setEstBloqueCache(dirBloqCache, I);
                     }
                 break;
@@ -254,31 +257,27 @@ public class Procesador extends Thread
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //
                         
                         guardarEnMemoria(idBloqEnCache, dirBloqCache);
-                        setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, U); //pero tengo q poner para quienes esta C
-                        estr.quitarProcesador(idBloqEnCache, myNumP);                        
+                        
+                        estr.quitarProcesador(idBloqEnCache, myNumP);  
+                        estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
+                           
+                        //setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, U); //pero tengo q poner para quienes esta C
+                        //estr.quitarProcesador(idBloqEnCache, myNumP);                        
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
+                        
+                        setIdBloqueCache(dirBloqCache, dirNumBloqMem);
                         setEstBloqueCache(dirBloqCache, I);
                     }
                 break;
                 case I:
+                    //es como para que mas abajo se vea q si tengo el bloque pero invalido y q hay q traerlo
                     setIdBloqueCache(dirBloqCache, dirNumBloqMem);
                     setEstBloqueCache(dirBloqCache, I);
                 break;
             }
-            // CARGAR EL NUEVO BLOQUE (NO LO HACÍA NUNCA ESTE IF GRANDE)
-            cargarACache(dirNumBloqMem, dirBloqCache);
-            setIdBloqueCache(dirBloqCache, dirNumBloqMem);
-            setEstBloqueCache(dirBloqCache, C);
-            // PARA AÑADIRME DEBERÍA SOLICITAR EL DIRECTORIO
-            estr.anadirProcesador(dirNumBloqMem, myNumP);
-                        
-            // CARGA LA PALABRA QUE SE OCUPA AL REGISTRO
-            regs[X] = getPalabraCache(dirBloqCache, numPalabra);
-                        
-            // TIENE QUE ACTUALIZAR EL DIRECTORIO DE ESTE BLOQUE A COMPARTIDO                        
-            estr.signalC(myNumP);
         }
         
+        //Siempre se mete en este caso.
         //CASO 2: ESTÁ EL BLOQUE BLOQUE (HIT) O NO HAY NINGUNO
         if(idBloqEnCache == dirNumBloqMem || idBloqEnCache == -1)
         {
@@ -299,7 +298,7 @@ public class Procesador extends Thread
                         estr.waitD(estr.directorioPapa(idBloqEnCache));
                         guardarEnMemoria(getIdBloqueCache(dirBloqCache), dirBloqCache);
                         setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, C);
-                        estr.anadirProcesador(idBloqEnCache, myNumP);       
+                        estr.anadirProcesador(idBloqEnCache, myNumP); //extra xq se supone q yo ya lo tenia modificado      
                         // Carga la palabra que se ocupa al registro
                         regs[X] = getPalabraCache(dirBloqCache, numPalabra);
                         estr.signalC(myNumP);
