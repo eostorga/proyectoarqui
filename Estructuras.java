@@ -1,46 +1,32 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package proy_arqui;
 
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Iva
- */
-public class Estructuras { 
-    
-    Semaphore SemaforoDir1 = new Semaphore(1);
-    Semaphore SemaforoDir2 = new Semaphore(1);
-    Semaphore SemaforoDir3 = new Semaphore(1);
-    Semaphore SemaforoCache1 = new Semaphore(1);
-    Semaphore SemaforoCache2 = new Semaphore(1);
-    Semaphore SemaforoCache3 = new Semaphore(1);
-    
+public class Estructuras
+{     
     private final int ID = 0;
     private final int EST = 1;
     
-    private final int B = 0;
-    private final int E = 1;
-    private final int P1 = 2;
-    private final int P2 = 3;
-    private final int P3 = 4;
+    private final int B = 0;    // BLOQUE DIRECTORIO
+    private final int E = 1;    // ESTADO DIRECTORIO
+    private final int P1 = 2;   // PROCESADOR 1
+    private final int P2 = 3;   // PROCESADOR 2
+    private final int P3 = 4;   // PROCESADOR 3 
     
-    private final int C = 0;
-    private final int M = 1;
-    private final int I = 2;
-    private final int U = 3;
+    private final int C = 0;    // COMPARTIDO
+    private final int M = 1;    // MODIFICADO
+    private final int I = 2;    // INVÁLIDO
+    private final int U = 3;    // UNCACHED
     
+    ////////////////////////////////////////////////////////////////////////////
+    //MEMORIA COMPARTIDA
     //0-31|32-63|64-95
     // P1 | P2  | P3 
     private int smem[] = new int[96];    
     
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
     //DIRECTORIOS
     
     // B|E|P1|P2|P3
@@ -56,10 +42,10 @@ public class Estructuras {
     private int dir3[][] = new int[8][5];
     
     //FIN DE LOS DIRECTORIOS
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
     
     
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
     //CACHES
  
     public int dcache1[][] = new int[4][4];     // Cache de datos (4 bloques, cada bloque con 4 palabras, cada palabra 4 bytes)
@@ -72,23 +58,47 @@ public class Estructuras {
     public int estCache3[][] = new int[4][2];   // 8bloques*4 = 32 palabras ---> 32palabras*4 = 128 direcciones de palabras
 
     //FIN DE LAS CACHES
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
     
-    public void Estructuras(){
-        //inicializarDir();
+    ////////////////////////////////////////////////////////////////////////////
+    //SEMÁFOROS
+    
+    Semaphore SemaforoDir1 = new Semaphore(1);
+    Semaphore SemaforoDir2 = new Semaphore(1);
+    Semaphore SemaforoDir3 = new Semaphore(1);
+    Semaphore SemaforoCache1 = new Semaphore(1);
+    Semaphore SemaforoCache2 = new Semaphore(1);
+    Semaphore SemaforoCache3 = new Semaphore(1);
+    
+    //FIN DE SEMÁFOROS
+    ////////////////////////////////////////////////////////////////////////////
+    
+    // CONSTRUCTOR DE CLASE ESTRUCTURAS
+    public void Estructuras()
+    {
+        inicializarDirs();
         inicializarCaches();
     }
     
-    public void inicializarDirs(){
-        for(int i = 0; i < 32; i+=4){
+    public void inicializarDirs()
+    {
+        for(int i = 0; i < 32; i+=4)
+        {
             dir1[i][B] = i;
+            dir1[i][E] = U;
             dir2[i][B] = 32+i;
+            dir2[i][E] = U;
             dir3[i][B] = 64+i;
+            dir3[i][E] = U;
         }
     }
     
-    public void inicializarCaches(){
-        for(int i =0; i < 4; ++i){
+    public void inicializarCaches()
+    {
+        for(int i =0; i < 4; ++i)
+        {
+            setEstBloqueCache(0, i, I);
+            setIdBloqueCache(0, i, I);
             setEstBloqueCache(1, i, I);
             setIdBloqueCache(1, i, I);
             setEstBloqueCache(2, i, I);
@@ -98,8 +108,8 @@ public class Estructuras {
         }
     }
     
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //uso de los semaforos
+    ////////////////////////////////////////////////////////////////////////////
+    //USO DE LOS SEMÁFOROS
     
     public void waitD(int numDir){
         switch(numDir){
@@ -279,12 +289,14 @@ public class Estructuras {
         return result;
     }
     
+    ////////////////////////////////////////////////////////////////////////////
+    // SECCIÓN DE SETS Y GETS, NO IMPORTA DE DONDE VENGA LA MEMORIA Y CACHE,
+    // LOS CAMBIOS SE HACEN SOLO ACÁ Y NO EN EL RESTO DEL CÓDIGO.
     
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //SECCION DE SETS Y GETS, NO IMPORTA DE DONDE VENGA LA MEMORIA Y CACHE, LOS CAMBIOS
-    //SE HACEN SOLO ACA Y NO EN EL RESTO DEL CODIGO
-    public void setPalabraCache(int numCache, int indiceBloque, int indicePalabra, int valor){
-        switch(numCache){
+    public void setPalabraCache(int numCache, int indiceBloque, int indicePalabra, int valor)
+    {
+        switch(numCache)
+        {
             case 1:
                 dcache1[indiceBloque][indicePalabra] = valor;
             break;
@@ -297,9 +309,11 @@ public class Estructuras {
         }
     }
     
-    public int getPalabraCache(int numCache, int indiceBloque, int indicePalabra){
+    public int getPalabraCache(int numCache, int indiceBloque, int indicePalabra)
+    {
         int palabra = -1;
-        switch(numCache){
+        switch(numCache)
+        {
             case 1:
                 palabra = dcache1[indiceBloque][indicePalabra];
             break;
@@ -313,8 +327,10 @@ public class Estructuras {
         return palabra; 
     }
     
-    public void setEstBloqueCache(int numCache, int indiceBloque, int estado){
-        switch(numCache){
+    public void setEstBloqueCache(int numCache, int indiceBloque, int estado)
+    {
+        switch(numCache)
+         {
             case 1:
                 estCache1[indiceBloque][EST] = estado;
             break;
@@ -327,9 +343,11 @@ public class Estructuras {
         }
     }
     
-    public int getEstBloqueCache(int numCache, int indiceBloque){
+    public int getEstBloqueCache(int numCache, int indiceBloque)
+    {
         int estado = -1;
-        switch(numCache){
+        switch(numCache)
+        {
             case 1:
                 estado = estCache1[indiceBloque][EST];
             break;
@@ -343,8 +361,10 @@ public class Estructuras {
         return estado;
     }
     
-    public void setIdBloqueCache(int numCache, int indiceBloque, int id){
-        switch(numCache){
+    public void setIdBloqueCache(int numCache, int indiceBloque, int id)
+    {
+        switch(numCache)
+        {
             case 1:
                 estCache1[indiceBloque][ID] = id;
             break;
@@ -357,9 +377,11 @@ public class Estructuras {
         }
     }
     
-    public int getIdBloqueCache(int numCache, int indiceBloque){
+    public int getIdBloqueCache(int numCache, int indiceBloque)
+    {
         int id = -1;
-        switch(numCache){
+        switch(numCache)
+        {
             case 1:
                 id = estCache1[indiceBloque][ID];
             break;
@@ -373,31 +395,37 @@ public class Estructuras {
         return id;
     }
     
-    public void setPalabraMem(int numCache, int indiceMem, int valor){
+    public void setPalabraMem(int numCache, int indiceMem, int valor)
+    {
         smem[indiceMem] = valor;
     }
     
-    public int getPalabraMem(int numCache, int indiceMem){
+    public int getPalabraMem(int numCache, int indiceMem)
+    {
         return smem [indiceMem];
     }
     
-    public void setEntradaDir(int numDir, int indiceDir, int entrada, int valor){
-        switch(numDir){
+    public void setEntradaDir(int numDir, int indiceDir, int entrada, int valor)
+    {
+        switch(numDir)
+        {
             case 1:
-                dir1[indiceDir][entrada] = valor ;
+                dir1[indiceDir][entrada] = valor;
             break;
             case 2:
-                dir2[indiceDir][entrada] = valor ;
+                dir2[indiceDir][entrada] = valor;
             break;
             case 3:
-                dir3[indiceDir][entrada] = valor ;
+                dir3[indiceDir][entrada] = valor;
             break;
         }
     }
     
-    public int getEntradaDir(int numDir, int indiceDir, int entrada){
+    public int getEntradaDir(int numDir, int indiceDir, int entrada)
+    {
         int salida = -1;
-        switch(numDir){
+        switch(numDir)
+        {
             case 1:
                 salida = dir1[indiceDir][entrada];
             break;
@@ -412,72 +440,92 @@ public class Estructuras {
     }
     
     //FIN DE LA SECCION DE SETS Y GETS
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////  
+    ////////////////////////////////////////////////////////////////////////////
     
     // ESTE METODO DEVUELVE EL ESTADO EN EL DIRECTORIO DE UN BLOQUE CON ID = DIR MEM BLOQUE
-    // REQUIERE: ID DEL BLOQUE NADA MAS
     // DEVUELVE: 'C', 'M', 'U'
-    public int getEstadoBloqueDir(int idBloque){
+    public int getEstadoBloqueDir(int idBloque)
+    {
         int indiceDir, estado = -1;
-        if(idBloque >= 0 && idBloque <=31){
-            indiceDir = idBloque/4;
+        if(idBloque >= 0 && idBloque <=31)
+        {
+            /* |0|4|8|12|16|20|24|28| */
+            indiceDir = idBloque / 4;
+            // indiceDir = idBloque % 4;
             estado = getEntradaDir(1,indiceDir,E);
         }
-        if(idBloque >= 32 && idBloque <=63){
-            // |32|36|40|44|48|52|56|60|
+        if(idBloque >= 32 && idBloque <=63)
+        {
+            /* |32|36|40|44|48|52|56|60| */
             indiceDir = (idBloque-32)/4;
+            // indiceDir = (idBloque-32) % 4;
             estado = getEntradaDir(2,indiceDir,E);
         }
-        if(idBloque >= 64 && idBloque <=95){
+        if(idBloque >= 64 && idBloque <=95)
+        {
+            /* |64|68|72|76|80|84|88|92| */
             indiceDir = (idBloque-64)/4;
+            // indiceDir = (idBloque-64) % 4;
             estado = getEntradaDir(3,indiceDir,E);
         }
         return estado;
     }
     
-    //ESTE METODO DEVUELVE EL DIRECTORIO CASA DE UN BLOQUE DE MEMORIA
-    //REQUIERE: EL ID DEL BLOQUE EN MEMORIA
-    //DEVUELVE: 1, 2, 3
-    public int directorioPapa(int idBloque){
+    // ESTE MÉTODO DEVUELVE EL DIRECTORIO CASA DE UN BLOQUE DE MEMORIA
+    // REQUIERE: EL ID DEL BLOQUE EN MEMORIA
+    // DEVUELVE: 1, 2, 3
+    public int directorioPapa(int idBloque)
+    {
         int papa = -1; 
-        if(idBloque >= 0 && idBloque <=31){
+        if(idBloque >= 0 && idBloque <=31)
+        {
             papa = 1;
         }
-        if(idBloque >= 32 && idBloque <=63){
+        if(idBloque >= 32 && idBloque <=63)
+        {
             papa = 2;
         }
-        if(idBloque >= 64 && idBloque <=95){
+        if(idBloque >= 64 && idBloque <=95)
+        {
             papa = 3;
         }
         return papa;
     }
     
-    //ESTE METODO DEVUELVE CUAL PROCESADOR TIENE EL BLOQUE EN CASO DE QUE ESTE MODIFICADO
-    //REQUIERE: EL ID DEL BLOQUE EN MEM
-    //DEVUELVE; 1, 2, 3
-    public int consultarDuenoBloqueDir(int idBloque){
+    // ESTE MÉTODO DEVUELVE CUÁL PROCESADOR TIENE EL BLOQUE EN CASO DE QUE ESTÉ MODIFICADO
+    // REQUIERE: EL ID DEL BLOQUE EN MEMORIA
+    // DEVUELVE; 1, 2, 3
+    public int consultarDuenoBloqueDir(int idBloque)
+    {
         int dueno = -1;
         int indiceDir;
-        if(idBloque >= 0 && idBloque <=31){
+        
+        if(idBloque >= 0 && idBloque <=31)
+        {
             indiceDir = idBloque/4;
-            if(getEntradaDir(1,indiceDir,E)== 'M'){
-                if(getEntradaDir(1,indiceDir,P1)== '1') dueno = 1;
-                else if(getEntradaDir(1,indiceDir,P2)== '1') dueno = 2;
-                else if(getEntradaDir(1,indiceDir,P3)== '1') dueno = 3;
+            if(getEntradaDir(1,indiceDir,E) == 'M')
+            {
+                if(getEntradaDir(1,indiceDir,P1) == '1') dueno = 1;
+                else if(getEntradaDir(1,indiceDir,P2) == '1') dueno = 2;
+                else if(getEntradaDir(1,indiceDir,P3) == '1') dueno = 3;
             }
         }
-        if(idBloque >= 32 && idBloque <=63){
-            // |32|36|40|44|48|52|56|60|
+        
+        if(idBloque >= 32 && idBloque <=63)
+        {
             indiceDir = (idBloque-32)/4;
-            if(getEntradaDir(2,indiceDir,E)== 'M'){
+            if(getEntradaDir(2,indiceDir,E)== 'M')
+            {
                 if(getEntradaDir(2,indiceDir,P1)== '1') dueno = 1;
                 else if(getEntradaDir(2,indiceDir,P2)== '1') dueno = 2;
                 else if(getEntradaDir(2,indiceDir,P3)== '1') dueno = 3;
             }
         }
-        if(idBloque >= 64 && idBloque <=95){
+        if(idBloque >= 64 && idBloque <=95)
+        {
             indiceDir = (idBloque-64)/4;
-            if(getEntradaDir(3,indiceDir,E)== 'M'){
+            if(getEntradaDir(3,indiceDir,E)== 'M')
+            {
                 if(getEntradaDir(3,indiceDir,P1)== '1') dueno = 1;
                 else if(getEntradaDir(3,indiceDir,P2)== '1') dueno = 2;
                 else if(getEntradaDir(3,indiceDir,P3)== '1') dueno = 3;
@@ -486,41 +534,48 @@ public class Estructuras {
         return dueno;
     }
     
-    
-    
-    public void cargarACache(int numCache, int direccionMemoria, int direccionCache){
+    public void cargarACache(int numCache, int direccionMemoria, int direccionCache)
+    {
         int j = direccionMemoria;
-        for(int i = 0; i < 4; i++){
+        for(int i = 0; i < 4; i++)
+        {
             setPalabraCache(numCache, direccionCache, i, getPalabraMem(numCache, j));
             j++;
         }
     }
     
-    public void guardarEnMemoria(int numCache, int direccionMemoria, int direccionCache){
+    public void guardarEnMemoria(int numCache, int direccionMemoria, int direccionCache)
+    {
         int j = direccionMemoria;
-        for(int i = 0; i < 4; i++){
+        for(int i = 0; i < 4; i++)
+        {
             setPalabraMem(numCache, j, getPalabraCache(numCache, direccionCache, i));
             j++;
         }
      }
    
-    // ESTE METODO RECIBE EL DIRDUEÑO, PROCESADOR, IDBLOQUE
-    // LO QUE HACE ES PONER PARA EL INDICE BLOQUE EN EL DIR, PONER UN 1 EN LA COLUMNA CORRESPONDIENTE A PROCESADOR
-    public void anadirProcesador(int idBloque, int proce){
+    // ESTE MÉTODO RECIBE EL DIRECTORIO DUEÑO, PROCESADOR, ID BLOQUE
+    // LO QUE HACE ES PONER PARA EL INDICE BLOQUE EN EL DIRECTORIO, 
+    // PONE UN 1 EN LA COLUMNA CORRESPONDIENTE A PROCESADOR.
+    public void anadirProcesador(int idBloque, int proce)
+    {
         int indiceDir; 
-        if(idBloque >= 0 && idBloque <=31){
+        if(idBloque >= 0 && idBloque <=31)
+        {
             indiceDir = idBloque/4;
             if(proce == 1) setEntradaDir(1, indiceDir, P1, 1);
             if(proce == 2) setEntradaDir(1, indiceDir, P2, 1);
             if(proce == 3) setEntradaDir(1, indiceDir, P3, 1);
         }
-        if(idBloque >= 32 && idBloque <=63){
+        if(idBloque >= 32 && idBloque <=63)
+        {
             indiceDir = (idBloque-32)/4;
             if(proce == 1) setEntradaDir(2, indiceDir, P1, 1);
             if(proce == 2) setEntradaDir(2, indiceDir, P2, 1);
             if(proce == 3) setEntradaDir(2, indiceDir, P3, 1);
         }
-        if(idBloque >= 64 && idBloque <=95){
+        if(idBloque >= 64 && idBloque <=95)
+        {
             indiceDir = (idBloque-64)/4;
             if(proce == 1) setEntradaDir(3, indiceDir, P1, 1);
             if(proce == 2) setEntradaDir(3, indiceDir, P2, 1);
@@ -528,21 +583,25 @@ public class Estructuras {
         }
     }
     
-    public void quitarProcesador(int idBloque, int proce){
+    public void quitarProcesador(int idBloque, int proce)
+    {
         int indiceDir; 
-        if(idBloque >= 0 && idBloque <=31){
+        if(idBloque >= 0 && idBloque <=31)
+        {
             indiceDir = idBloque/4;
             if(proce == 1) setEntradaDir(1, indiceDir, P1, 0);
             if(proce == 2) setEntradaDir(1, indiceDir, P2, 0);
             if(proce == 3) setEntradaDir(1, indiceDir, P3, 0);
         }
-        if(idBloque >= 32 && idBloque <=63){
+        if(idBloque >= 32 && idBloque <=63)
+        {
             indiceDir = (idBloque-32)/4;
             if(proce == 1) setEntradaDir(2, indiceDir, P1, 0);
             if(proce == 2) setEntradaDir(2, indiceDir, P2, 0);
             if(proce == 3) setEntradaDir(2, indiceDir, P3, 0);
         }
-        if(idBloque >= 64 && idBloque <=95){
+        if(idBloque >= 64 && idBloque <=95)
+        {
             indiceDir = (idBloque-64)/4;
             if(proce == 1) setEntradaDir(3, indiceDir, P1, 0);
             if(proce == 2) setEntradaDir(3, indiceDir, P2, 0);
@@ -550,81 +609,115 @@ public class Estructuras {
         }
     }
     
-    public void verificarUncached(int idBloque){
-        int indiceDir; 
-        if(idBloque >= 0 && idBloque <=31){
+    public void verificarUncached(int idBloque)
+    {
+        int indiceDir;
+        
+        if(idBloque >= 0 && idBloque <=31)
+        {
             indiceDir = idBloque/4;
-            if(getEntradaDir(1, indiceDir, P1)==0 && getEntradaDir(1, indiceDir, P2)==0 && getEntradaDir(1, indiceDir, P3)==0) setEntradaDir(1, indiceDir, E, U); 
+            if(getEntradaDir(1, indiceDir, P1) == 0 && getEntradaDir(1, indiceDir, P2) == 0 && getEntradaDir(1, indiceDir, P3) == 0)
+            {
+                setEntradaDir(1, indiceDir, E, U); 
+            }
         }
-        if(idBloque >= 32 && idBloque <=63){
+        
+        if(idBloque >= 32 && idBloque <=63)
+        {
             indiceDir = (idBloque-32)/4;
-            if(getEntradaDir(2, indiceDir, P1)==0 && getEntradaDir(2, indiceDir, P2)==0 && getEntradaDir(2, indiceDir, P3)==0) setEntradaDir(2, indiceDir, E, U); 
+            if(getEntradaDir(2, indiceDir, P1) == 0 && getEntradaDir(2, indiceDir, P2) == 0 && getEntradaDir(2, indiceDir, P3) == 0)
+            {
+                setEntradaDir(2, indiceDir, E, U); 
+            }
         }
-        if(idBloque >= 64 && idBloque <=95){
+        
+        if(idBloque >= 64 && idBloque <=95)
+        {
             indiceDir = (idBloque-64)/4;
-            if(getEntradaDir(3, indiceDir, P1)==0 && getEntradaDir(3, indiceDir, P2)==0 && getEntradaDir(3, indiceDir, P3)==0) setEntradaDir(3, indiceDir, E, U); 
+            if(getEntradaDir(3, indiceDir, P1) == 0 && getEntradaDir(3, indiceDir, P2) == 0 && getEntradaDir(3, indiceDir, P3) == 0)
+            {
+                setEntradaDir(3, indiceDir, E, U);
+            } 
         }
     }
     
-    public void quitarCompartidos(int idBloque, int proc){
+    public void quitarCompartidos(int idBloque, int proc)
+    {
         int indiceDir; 
-        if(idBloque >= 0 && idBloque <=31){
+        
+        if((idBloque >= 0) && (idBloque <= 31))
+        {
             indiceDir = idBloque/4;
-            if(proc != 1 && getEntradaDir(1, indiceDir, P1) == 1){
+            
+            if((proc != 1) && (getEntradaDir(1, indiceDir, P1) == 1))
+            {
                 setEntradaDir(1, indiceDir, P1, 0);
                 waitC(1);
                 setEstBloqueCache(1, (idBloque%4), I);
                 signalC(1);
             }
-            if(proc != 2 && getEntradaDir(1, indiceDir, P2) == 1){
+            if((proc != 2) && (getEntradaDir(1, indiceDir, P2) == 1))
+            {
                 setEntradaDir(1, indiceDir, P2, 0);
                 waitC(2);
                 setEstBloqueCache(2, (idBloque%4), I);
                 signalC(2);
             }
-            if(proc != 3 && getEntradaDir(1, indiceDir, P3) == 1){
+            if((proc != 3) && (getEntradaDir(1, indiceDir, P3) == 1))
+            {
                 setEntradaDir(1, indiceDir, P3, 0);
                 waitC(3);
                 setEstBloqueCache(3, (idBloque%4), I);
                 signalC(3);
             }
         }
-        if(idBloque >= 32 && idBloque <=63){
+        
+        if((idBloque >= 32) && (idBloque <=63))
+        {
             indiceDir = (idBloque-32)/4;
-            if(proc != 1 && getEntradaDir(2, indiceDir, P1) == 1){
+            if((proc != 1) && (getEntradaDir(2, indiceDir, P1) == 1))
+            {
                 setEntradaDir(2, indiceDir, P1, 0);
                 waitC(1);
                 setEstBloqueCache(1, (idBloque%4), I);
                 signalC(1);
             }
-            if(proc != 2 && getEntradaDir(2, indiceDir, P2) == 1){
+            if((proc != 2) && (getEntradaDir(2, indiceDir, P2) == 1))
+            {
                 setEntradaDir(2, indiceDir, P2, 0);
                 waitC(2);
                 setEstBloqueCache(2, (idBloque%4), I);
                 signalC(2);
             }
-            if(proc != 3 && getEntradaDir(2, indiceDir, P3) == 1){
+            if((proc != 3) && (getEntradaDir(2, indiceDir, P3) == 1))
+            {
                 setEntradaDir(2, indiceDir, P3, 0);
                 waitC(3);
                 setEstBloqueCache(3, (idBloque%4), I);
                 signalC(3);
             }
         }
-        if(idBloque >= 64 && idBloque <=95){
+        
+        if((idBloque >= 64) && (idBloque <=95))
+        {
             indiceDir = (idBloque-64)/4;
-            if(proc != 1 && getEntradaDir(3, indiceDir, P1) == 1){
+            
+            if((proc != 1) && (getEntradaDir(3, indiceDir, P1) == 1))
+            {
                 setEntradaDir(3, indiceDir, P1, 0);
                 waitC(1);
                 setEstBloqueCache(1, (idBloque%4), I);
                 signalC(1);
             }
-            if(proc != 2 && getEntradaDir(3, indiceDir, P2) == 1){
+            if((proc != 2) && (getEntradaDir(3, indiceDir, P2) == 1))
+            {
                 setEntradaDir(3, indiceDir, P2, 0);
                 waitC(2);
                 setEstBloqueCache(2, (idBloque%4), I);
                 signalC(2);
             }
-            if(proc != 3 && getEntradaDir(3, indiceDir, P3) == 1){
+            if((proc != 3) && (getEntradaDir(3, indiceDir, P3) == 1))
+            {
                 setEntradaDir(3, indiceDir, P3, 0);
                 waitC(3);
                 setEstBloqueCache(3, (idBloque%4), I);
@@ -632,6 +725,6 @@ public class Estructuras {
             }
         }
     }
-    
-    
+
+// FIN DE LA CLASE
 }
