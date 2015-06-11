@@ -97,14 +97,15 @@ public class Estructuras
     {
         for(int i =0; i < 4; ++i)
         {
-            setEstBloqueCache(0, i, I);
-            setIdBloqueCache(0, i, I);
             setEstBloqueCache(1, i, I);
-            setIdBloqueCache(1, i, I);
+            setIdBloqueCache(1, i, -1);
+            //setIdBloqueCache(1, i, I);
             setEstBloqueCache(2, i, I);
-            setIdBloqueCache(2, i, I);
+            setIdBloqueCache(2, i, -1);
+            //setIdBloqueCache(2, i, I);
             setEstBloqueCache(3, i, I);
-            setIdBloqueCache(3, i, I);
+            setIdBloqueCache(3, i, -1);
+            //setIdBloqueCache(3, i, I);
         }
     }
     

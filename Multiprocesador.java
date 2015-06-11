@@ -90,21 +90,20 @@ public class Multiprocesador {
         }
     }
     
-    //set del reloj en la ventana de simulacion
-    public void setClock(int r){
+    //SET DEL RELOJ EN LA VENTANA DE SIMULACIÓN
+    public void setClock(int r)
+    {
         sim.setReloj(r);
     }
     
-    //set de las estadisticas en la ventana de simulacion
-    public void verEstadisticas(){
+    //SET DE LAS ESTADÍSTICAS EN LA VENTANA DE SIMULACIÓN
+    public void verEstadisticas()
+    {
         sim.setEstadisticas(proc1.verEstado());
     }
     
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
+    public static void main(String[] args)
+    {
         Simulacion sim = new Simulacion();
         Multiprocesador mp = new Multiprocesador(sim);
         CargadorArchivos crg = new CargadorArchivos(mp, sim);

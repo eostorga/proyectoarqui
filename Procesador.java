@@ -3,165 +3,174 @@ package proy_arqui;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
-public class Procesador extends Thread {
-
+public class Procesador extends Thread
+{
     private static Multiprocesador myMp;
-    private Estructuras estr;
+    private final Estructuras estr;
     private int myNumP;
-
     private int pcA;
     private int limit;
-
     private boolean puedoSeguir = true;
     private boolean final_programa = false;
     private int ciclo = 0;
-
     private int stop = 0;
     private int cont = 0;
-
     private int destruir = 0;
 
-    //COLUMNAS EN CACHE
+    // COLUMNAS DE ESTADO EN CACHE Y DIRECTORIOS
     private final int ID = 0;
     private final int EST = 1;
-    //ESTADOS DE BLOQUES
+    private final int E = 1;
+    ////////////////////////////////////////////////////////////////////////////
+    
+    // ESTADOS DE BLOQUES
     private final int C = 0;
     private final int M = 1;
     private final int I = 2;
     private final int U = 3;
-
-    private final int E = 1;
-
-    private int PC;                             // Contador de programa
-    private int IR;                             // Registro de instruccion
-    private int regs[] = new int[32];           // 32 registros
-    // Para la cache de datos agregamos dos filas extra que hacen referencia al número de bloque y al estado del bloque ('C','M','I')
-    //private int dcache[][] = new int[4][4];     // Cache de datos (4 bloques, cada bloque con 4 palabras, cada palabra 4 bytes)
-    //private int estCache[][] = new int[4][2];   // 8bloques*4 = 32 palabras ---> 32palabras*4 = 128 direcciones de palabras
-
-    //private int dmem[] = new int[32];           // Memoria de datos compartida (8 bloques, cada uno con 4 palabras)    
-    //constructor
-    public Procesador(int numP, Multiprocesador mp, Estructuras es) {
+    ////////////////////////////////////////////////////////////////////////////
+    
+    private int PC;                     // Contador de programa
+    private int IR;                     // Registro de instruccion
+    private int regs[] = new int[32];   // 32 registros
+   
+    // CONSTRUCTOR
+    public Procesador(int numP, Multiprocesador mp, Estructuras es)
+    {
         myMp = mp;
         estr = es;
         myNumP = numP;
-        for (int x = 0; x < 4; ++x) {
-            setEstBloqueCache(x, I);
-            setIdBloqueCache(x, -1);
-            //estCache[x][EST] = I;
-            //estCache[x][ID] = -1;
+        
+        for (int i = 0; i < 4; ++i)
+        {
+            setEstBloqueCache(i, I);
+            setIdBloqueCache(i, -1);
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //SECCION DE SETS Y GETS, NO IMPORTA DE DONDE VENGA LA MEMORIA Y CACHE, LOS CAMBIOS
-    //SE HACEN SOLO ACA Y NO EN EL RESTO DEL CODIGO
-    public void setPalabraCache(int indiceBloque, int indicePalabra, int valor) {
+    ////////////////////////////////////////////////////////////////////////////
+    // SECCIÓN DE SETS Y GETS, NO IMPORTA DE DONDE VENGA LA MEMORIA Y CACHE,
+    // LOS CAMBIOS SE HACEN SOLO ACÁ Y NO EN EL RESTO DEL CÓDIGO
+    public void setPalabraCache(int indiceBloque, int indicePalabra, int valor)
+    {
         estr.setPalabraCache(myNumP, indiceBloque, indicePalabra, valor);
-        //dcache[indiceBloque][indicePalabra] = valor;
     }
 
-    public int getPalabraCache(int indiceBloque, int indicePalabra) {
+    public int getPalabraCache(int indiceBloque, int indicePalabra)
+    {
         return estr.getPalabraCache(myNumP, indiceBloque, indicePalabra);
-        //return dcache[indiceBloque][indicePalabra];
     }
 
-    public void setEstBloqueCache(int indiceBloque, int estado) {
+    private void setEstBloqueCache(int indiceBloque, int estado)
+    {
         estr.setEstBloqueCache(myNumP, indiceBloque, estado);
-        //estCache[indiceBloque][EST] = estado;
     }
 
-    public int getEstBloqueCache(int indiceBloque) {
+    public int getEstBloqueCache(int indiceBloque)
+    {
         return estr.getEstBloqueCache(myNumP, indiceBloque);
-        //return estCache[indiceBloque][EST];
     }
 
-    public void setIdBloqueCache(int indiceBloque, int id) {
+    private void setIdBloqueCache(int indiceBloque, int id)
+    {
         estr.setIdBloqueCache(myNumP, indiceBloque, id);
-        //estCache[indiceBloque][ID] = id;
     }
 
-    public int getIdBloqueCache(int indiceBloque) {
+    public int getIdBloqueCache(int indiceBloque)
+    {
         return estr.getIdBloqueCache(myNumP, indiceBloque);
-        //return estCache[indiceBloque][ID];
     }
 
-    public void setPalabraMem(int indiceMem, int valor) {
+    public void setPalabraMem(int indiceMem, int valor)
+    {
         estr.setPalabraMem(myNumP, indiceMem, valor);
-        //dmem[indiceMem] = valor;
     }
 
-    public int getPalabraMem(int indiceMem) {
+    public int getPalabraMem(int indiceMem)
+    {
         return estr.getPalabraMem(myNumP, indiceMem);
     }
-
-    // Cambia el estado de un bloque en el directorio
-    // RECIBE: número del directorio, id de un bloque en memoria, nuevoEstado
-    public void setEstDir(int numDir, int idBloque, int nuevoEstado) {
+    
+    // CAMBIA EL ESTADO DE UN BLOQUE EN EL DIRECTORIO
+    // RECIBE: NUM DEL DIRECTORIO, ID DE BLOQUE EN MEMORIA, NUEVO ESTADO
+    public void setEstDir(int numDir, int idBloque, int nuevoEstado)
+    {
         int indiceDir = -1;
-        if (idBloque >= 0 && idBloque <= 31) {
+        if (idBloque >= 0 && idBloque <= 31)
+        {
             indiceDir = idBloque / 4;
         }
-        if (idBloque >= 32 && idBloque <= 63) {
+        if (idBloque >= 32 && idBloque <= 63)
+        {
             indiceDir = (idBloque - 32) / 4;
         }
-        if (idBloque >= 64 && idBloque <= 95) {
+        if (idBloque >= 64 && idBloque <= 95)
+        {
             indiceDir = (idBloque - 64) / 4;
         }
         estr.setEntradaDir(numDir, indiceDir, E, nuevoEstado);
     }
 
-    public int getEstDir(int idBloque) {
+    // RECIBE EL ESTADO DE UN BLOQUE EN EL DIRECTORIO
+    public int getEstDir(int idBloque)
+    {
         return estr.getEstadoBloqueDir(idBloque);
     }
 
     //FIN DE LA SECCION DE SETS Y GETS
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Copia el bloque entero en el lugar que le corresponde en cache
-    public void cargarACache(int direccionMemoria, int direccionCache) {
+    ////////////////////////////////////////////////////////////////////////////
+
+    // COPIA EL BLOQUE ENTERO EN EL LUGAR QUE LE CORRESPONDE EN CACHÉ 
+    public void cargarACache(int direccionMemoria, int direccionCache)
+    {
         int j = direccionMemoria;
-        for (int i = 0; i < 4; i++) {
+        
+        for (int i = 0; i < 4; i++)
+        {
             setPalabraCache(direccionCache, i, getPalabraMem(j));
-            //setPalabraCache(direccionCache, i, dmem[j]);
-            //dcache[direccionCache][i] = dmem[j];
             j++;
         }
 
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 16; i++)
+        {
             puedoSeguir = false;
-            try {
+            try
+            {
                 myMp.barrera.await();
                 ciclo++;
                 cont++;
                 //System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
-            } catch (Exception e) {
+            } catch(Exception e)
+            {
                 e.printStackTrace();
             }
         }
 
         puedoSeguir = true;
         //System.out.println("Ya puede cambiar de instrucción.");
-
     }
 
-    // Guarda el bloque entero desde cache hasta el lugar en memoria que le corresponde
-    public void guardarEnMemoria(int direccionMemoria, int direccionCache) {
+    // GUARDA EL BLOQUE ENTERO DESDE CACHÉ HASTA SU POSICIÓN EN MEMORIA
+    public void guardarEnMemoria(int direccionMemoria, int direccionCache)
+    {
         int j = direccionMemoria;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++)
+        {
             setPalabraMem(j, getPalabraCache(direccionCache, i));
-            //dmem[j] = getPalabraCache(direccionCache, i);
-            //dmem[j] = dcache[direccionCache][i];
             j++;
         }
 
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 16; i++)
+        {
             puedoSeguir = false;
-            try {
+            try
+            {
                 myMp.barrera.await();
                 ciclo++;
                 cont++;
                 //System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
-            } catch (Exception e) {
+            } catch(Exception e)
+            {
                 e.printStackTrace();
             }
         }
@@ -197,20 +206,21 @@ public class Procesador extends Thread {
         }
     }
 
-    // Leer una palabra
-    public void LW(int Y, int X, int n) {
-        int numByte = regs[Y] + n;                                // Numero del byte que quiero leer de memoria 
-        int numBloqMem = Math.floorDiv(numByte, 16);             // Indice del bloque en memoria (0-24)
+    // LEER UNA PALABRA
+    public void LW(int Y, int X, int n)
+    {
+        int numByte = regs[Y] + n;                                  // Numero del byte que quiero leer de memoria 
+        int numBloqMem = Math.floorDiv(numByte, 16);                // Indice del bloque en memoria (0-24)
         int numPalabra = (numByte % 16) / 4;
-        int dirBloqCache = numBloqMem % 4;                        // Indice donde debe estar el bloque en cache
-        estr.waitC(myNumP);                                     // bloque mi cache ya que la voy a usar
-        int idBloqEnCache = getIdBloqueCache(dirBloqCache);        // ID del bloque que ocupa actualmente esa direccion en cache
-        //int idBloqEnCache = estCache[dirBloqCache][ID];         // ID del bloque que ocupa actualmente esa direccion en cache
-        int estadoBloqEnCache = getEstBloqueCache(dirBloqCache);  // Estado del bloque que ocupa esa dir de cache ('M', 'C', 'I')
-        //int estadoBloqEnCache = estCache[dirBloqCache][EST];    // Estado del bloque que ocupa esa dir de cache ('M', 'C', 'I')
-        int dirNumBloqMem = numBloqMem * 4;                       // Conversion para mapear la direccion inicial del bloque en memoria
+        int dirBloqCache = numBloqMem % 4;                          // Indice donde debe estar el bloque en cache
+        int idBloqEnCache = getIdBloqueCache(dirBloqCache);         // ID del bloque que ocupa actualmente esa direccion en cache
+        int estadoBloqEnCache = getEstBloqueCache(dirBloqCache);    // Estado del bloque que ocupa esa dir de cache ('M', 'C', 'I')
+        int dirNumBloqMem = numBloqMem * 4;                         // Conversion para mapear la direccion inicial del bloque en memoria
 
-        //CASO 1: HAY OTRO BLOQUE VÁLIDO
+        // BLOQUEO MI CACHÉ
+        estr.waitC(myNumP);
+        
+        //CASO 1: HAY OTRO BLOQUE DIFERENTE PERO VÁLIDO
         if(idBloqEnCache != dirNumBloqMem && idBloqEnCache != -1)
         {
             switch(estadoBloqEnCache){
@@ -478,11 +488,15 @@ public class Procesador extends Thread {
     //RX, ETIQ
     //Si Rx = 0 SALTA
     //X 0 n
-    public void BEQZ(int X, int n) {
-        if (regs[X] == 0) {
-            if (n >= 0) {
+    public void BEQZ(int X, int n)
+    {
+        if (regs[X] == 0)
+        {
+            if (n >= 0)
+            {
                 PC += 4 * (n - 1);
-            } else {
+            } else
+            {
                 PC += 4 * (n);
             }
         }
@@ -491,19 +505,20 @@ public class Procesador extends Thread {
     //RX, ETIQ
     //Si Rx != 0 SALTA
     //X 0 n
-    public void BNEZ(int X, int n) {
-        if (regs[X] != 0) {
-            //System.out.print("Si el R"+X+" es distinto de 0, brinco ");
-            if (n >= 0) {
+    public void BNEZ(int X, int n)
+    {
+        if (regs[X] != 0)
+        {
+            if (n >= 0)
+            {
                 PC += 4 * (n - 1);
-                //System.out.print(4*(n-1)+".\n");
-            } else {
+            } else
+            {
                 //IR -> 12 
                 //PC -> 16
                 //quiero moverme -2 y llegar a 4
                 //PC += 4*-2 = -8 -> PC = 12-8 = 8
                 PC += 4 * (n);
-                //System.out.print(4*(n)+".\n");
             }
         }
     }
@@ -511,14 +526,16 @@ public class Procesador extends Thread {
     //RX, RY, #n
     //Rx  (Ry) + n
     //Y X n
-    public void DADDI(int Y, int X, int n) {
+    public void DADDI(int Y, int X, int n)
+    {
         regs[X] = regs[Y] + n;
     }
 
     //RX, RY, RZ
     //Rx  (Ry) + (Rz)
     //Y Z X
-    public void DADD(int Y, int Z, int X) {
+    public void DADD(int Y, int Z, int X)
+    {
         regs[X] = regs[Y] + regs[Z];
     }
 
@@ -526,24 +543,28 @@ public class Procesador extends Thread {
     //Rx  (Ry) - (Rz)
     //Y Z X
     //34 5 1 5
-    public void DSUB(int Y, int Z, int X) {
+    public void DSUB(int Y, int Z, int X)
+    {
         regs[X] = regs[Y] - regs[Z];
     }
 
-    public void FIN() {
+    public void FIN()
+    {
         stop = 1;
     }
 
-    //procesa una instruccion
-    public void procesarInstruccion(int i) {
+    // PROCESA UNA INSTRUCCIÓN
+    public void procesarInstruccion(int i)
+    {
         PC += 4;
         int cod, p1, p2, p3;
         cod = myMp.getInstIdx(i);
         p1 = myMp.getInstIdx(i + 1);
         p2 = myMp.getInstIdx(i + 2);
         p3 = myMp.getInstIdx(i + 3);
-        //System.out.println("Mi cod es "+cod);
-        switch (cod) {
+
+        switch (cod)
+        {
             case 8:
                 DADDI(p1, p2, p3);
                 break;
@@ -570,101 +591,114 @@ public class Procesador extends Thread {
                 break;
         }
         puedoSeguir = true;
-        try {
+        
+        try
+        {
             myMp.barrera.await();
             ciclo++;
             cont++;
             //System.out.println("Ciclo #"+ciclo+". Puede cambiar de instrucción.\n");
-        } catch (Exception e) {
+        } catch(Exception e)
+        {
             e.printStackTrace();
         }
     }
 
-    /*
-     public void procesar(int pcA, int limit){
-     stop = 0;
-     IR = PC = pcA;
-     while(stop != 1 && IR < limit){
-     IR = PC;
-     if(puedoSeguir){
-     procesarInstruccion(IR);
-     verEstado();
-     }
-            
-     }
-     }*/
-    //set a las variables necesarias para reconocer el programa q se esta corriendo
-    public void setPcAyLimit(int pcActual, int limite) {
+    // SET VARIABLES NECESARIAS PARA RECONOCER EL PROGRAMA CORRIENDO 
+    public void setPcAyLimit(int pcActual, int limite)
+    {
         this.pcA = pcActual;
         this.limit = limite;
     }
 
-    //procesa cuantas instrucciones tenga el programa
-    public void procesar() {
+    // PROCESA LAS INSTRUCCIONES QUE TENGA EL PROGRAMA
+    public void procesar()
+    {
         int cont = 0;
         myMp.setClock(ciclo);
         stop = 0;
         IR = PC = pcA;
-        while (stop != 1 && IR < limit) {
+        
+        while (stop != 1 && IR < limit)
+        {
             IR = PC;
-            if (puedoSeguir) {
+            
+            if (puedoSeguir)
+            {
                 procesarInstruccion(IR);
-                if (stop == 1) { /*verEstado();*/ myMp.verEstadisticas();
+                if (stop == 1) 
+                { 
+                    // verEstado();
+                    myMp.verEstadisticas();
                 }
             }
         }
     }
 
-    //metodo run del hilo, aqui se hace la coherencia con el hilo principal
-    public void run() {
-        //procesar();
-        while (destruir == 0) {
+    // MÉTODO RUN DEL HILO, AQUÍ SE HACE LA COHERENCIA CON EL HILO PRINCIPAL
+    public void run()
+    {
+        while (destruir == 0)
+        {
             stop = 0;
             System.out.println(limit);
             procesar();
             System.out.println("lo hice");
-            synchronized (this) {
+            synchronized (this)
+            {
                 notify();
                 stop = 0;
-                try {
+                try
+                {
                     wait();
-                } catch (InterruptedException e) {
+                } catch(InterruptedException e)
+                {
                     System.out.println(e.getMessage());
                 }
             }
         }
     }
 
-    //set de sentinela para terminar el hilo q se esta corriendo
-    public void salir() {
+    // SET DE SENTINELA PARA TERMINAR EL HILO QUE SE ESTÁ CORRIENDO
+    public void salir()
+    {
         destruir = 1;
     }
 
-    //muestra el estado del procesador
-    public String verEstado() {
+    // MUESTRA EL ESTADO DEL PROCESADOR
+    public String verEstado()
+    {
         String estado = "";
         estado += "El PC es: " + PC + "\n";
         estado += "El IR es: " + IR + "\n";
         estado += "Los registros de procesador son:\n";
-        for (int i = 0; i < 32; i++) {
+        
+        for (int i = 0; i < 32; i++)
+        {
             estado += regs[i] + ", ";
         }
+        
         estado += "\n";
         estado += "La memoria cache contiene:\n";
-        for (int i = 0; i < 4; i++) {
+        
+        for (int i = 0; i < 4; i++)
+        {
             estado += "Bloque " + i + ", estado: " + getEstBloqueCache(i) + ", idBloque: " + getIdBloqueCache(i) + " --> ";
-            //estado+="Bloque "+i+", estado: "+estCache[i][EST]+", idBloque: "+estCache[i][ID]+" --> ";
-            for (int j = 0; j < 4; j++) {
+            
+            for (int j = 0; j < 4; j++)
+            {
                 estado += getPalabraCache(i, j) + ", ";
-                //estado += dcache[i][j]+ ", ";
             }
             estado += "\n";
         }
+        
         estado += "La memoria de datos contiene:\n";
-        for (int i = 0; i < 32; i++) {
+        
+        for (int i = 0; i < 32; i++)
+        {
             estado += getPalabraMem(i) + ", ";
-            //estado += dmem[i]+", ";
         }
+        
         estado += "\n";
         estado += "La cantidad de ciclos que tardó el hilo es: " + cont + "\n";
         System.out.println(estado);
