@@ -222,7 +222,7 @@ public class Procesador extends Thread
 
         // BLOQUEO MI CACHÉ
         estr.waitC(myNumP);
-        System.out.println(getEstDir(numBloqMem));
+        //System.out.println(getEstDir(numBloqMem));
         System.out.println("INICIA LW");
         //CASO 1: HAY OTRO BLOQUE DIFERENTE PERO VÁLIDO
         if(idBloqEnCache != dirNumBloqMem && idBloqEnCache != -1)
@@ -312,7 +312,8 @@ public class Procesador extends Thread
                     } else
                     {
                         estr.waitD(estr.directorioPapa(numBloqMem));
-                        if (getEstDir(numBloqMem) == C)
+                        System.out.println(dirBloqCache);
+                        if (estr.getEstadoBloqueDir(dirBloqCache) == C)
                         {
                             System.out.println("ESTADO DIRECTORIO -> COMPARTIDO");
                             cargarACache(dirNumBloqMem, dirBloqCache);
@@ -323,7 +324,7 @@ public class Procesador extends Thread
                             regs[X] = getPalabraCache(dirBloqCache, numPalabra);
                             estr.signalD(estr.directorioPapa(numBloqMem));
                             estr.signalC(myNumP);
-                        } else if (getEstDir(numBloqMem) == M)
+                        } else if (estr.getEstadoBloqueDir(dirBloqCache) == M)
                         {
                             System.out.println("ESTADO DIRECTORIO -> MODIFICADO");
                             int cacheDuena = estr.consultarDuenoBloqueDir(numBloqMem);
@@ -349,7 +350,7 @@ public class Procesador extends Thread
                                 estr.signalC(myNumP);
                                 estr.signalD(estr.directorioPapa(numBloqMem));
                             }
-                        } else if (getEstDir(numBloqMem) == U)
+                        } else if (estr.getEstadoBloqueDir(dirBloqCache) == U)
                         {
                             System.out.println("ESTADO DIRECTORIO -> UNCACHED");
                             estr.cargarACache(myNumP, dirNumBloqMem, dirBloqCache);

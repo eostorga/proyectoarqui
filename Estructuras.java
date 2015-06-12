@@ -85,11 +85,11 @@ public class Estructuras
         for(int i = 0; i < 32; i+=4)
         {
             dir1[i][B] = i;
-            dir1[i][E] = M;
+            dir1[i][E] = U;
             dir2[i][B] = 32+i;
-            dir2[i][E] = M;
+            dir2[i][E] = U;
             dir3[i][B] = 64+i;
-            dir3[i][E] = M;
+            dir3[i][E] = U;
         }
     }
     
@@ -445,25 +445,19 @@ public class Estructuras
     public int getEstadoBloqueDir(int idBloque)
     {
         int indiceDir, estado = -1;
-        if(idBloque >= 0 && idBloque <=31)
+        if(idBloque >= 0 && idBloque <=7)
         {
-            /* |0|4|8|12|16|20|24|28| */
             indiceDir = idBloque / 4;
-            // indiceDir = idBloque % 4;
             estado = getEntradaDir(1,indiceDir,E);
         }
-        if(idBloque >= 32 && idBloque <=63)
+        if(idBloque >= 8 && idBloque <=15)
         {
-            /* |32|36|40|44|48|52|56|60| */
             indiceDir = (idBloque-32)/4;
-            // indiceDir = (idBloque-32) % 4;
             estado = getEntradaDir(2,indiceDir,E);
         }
-        if(idBloque >= 64 && idBloque <=95)
+        if(idBloque >= 16 && idBloque <=23)
         {
-            /* |64|68|72|76|80|84|88|92| */
             indiceDir = (idBloque-64)/4;
-            // indiceDir = (idBloque-64) % 4;
             estado = getEntradaDir(3,indiceDir,E);
         }
         return estado;
