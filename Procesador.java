@@ -136,7 +136,8 @@ public class Procesador extends Thread
             puedoSeguir = false;
             try
             {
-                myMp.barrera.await();
+                myMp.phaser.arriveAndAwaitAdvance();
+                //myMp.barrera.await();
                 ciclo++;
                 cont++;
                 //System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
@@ -165,7 +166,8 @@ public class Procesador extends Thread
             puedoSeguir = false;
             try
             {
-                myMp.barrera.await();
+                myMp.phaser.arriveAndAwaitAdvance();
+                //myMp.barrera.await();
                 ciclo++;
                 cont++;
                 //System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
@@ -241,13 +243,10 @@ public class Procesador extends Thread
                         estr.waitD(estr.directorioPapa(numBloqMem));
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //                        
                         estr.quitarProcesador(idBloqEnCache, myNumP);
-<<<<<<< HEAD
 
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
 
-=======
->>>>>>> aa16597a038b8e23fbeb57d558d9d659a907d8de
                         estr.verificarUncached(idBloqEnCache);
                         estr.signalD(estr.directorioPapa(numBloqMem));
                         setIdBloqueCache(dirBloqCache, dirNumBloqMem);
@@ -265,8 +264,7 @@ public class Procesador extends Thread
                         estr.waitD(estr.directorioPapa(numBloqMem));                        
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //                        
                         guardarEnMemoria(idBloqEnCache, dirBloqCache);
-<<<<<<< HEAD
-                        
+   
                         estr.quitarProcesador(idBloqEnCache, myNumP);  
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
                            
@@ -274,9 +272,6 @@ public class Procesador extends Thread
                         //estr.quitarProcesador(idBloqEnCache, myNumP);                        
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
                         
-
-=======
->>>>>>> aa16597a038b8e23fbeb57d558d9d659a907d8de
                         setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, U); //pero tengo q poner para quienes esta C
                         estr.quitarProcesador(idBloqEnCache, myNumP);                        
                         estr.signalD(estr.directorioPapa(numBloqMem));
@@ -927,14 +922,16 @@ public class Procesador extends Thread
                 BNEZ(p1, p3);
                 break;
             case 63:
+                System.out.println("CODIGO 63 DE SALIDA");
                 FIN();
                 break;
         }
         puedoSeguir = true;
         
-        try
-        {
-            myMp.barrera.await();
+        try{
+            //myMp.barrera.await();
+            myMp.phaser.arriveAndAwaitAdvance();
+            //myMp.phaser.arriveAndDeregister();
             ciclo++;
             cont++;
             //System.out.println("Ciclo #"+ciclo+". Puede cambiar de instrucción.\n");
@@ -942,6 +939,7 @@ public class Procesador extends Thread
         {
             e.printStackTrace();
         }
+        
     }
 
     // SET VARIABLES NECESARIAS PARA RECONOCER EL PROGRAMA CORRIENDO 
@@ -952,6 +950,7 @@ public class Procesador extends Thread
     }
 
     // PROCESA LAS INSTRUCCIONES QUE TENGA EL PROGRAMA
+    
     public void procesar()
     {
         int cont = 0;
@@ -968,8 +967,9 @@ public class Procesador extends Thread
                 procesarInstruccion(IR);
                 if (stop == 1) 
                 { 
-                    // verEstado();
+                    //verEstado();
                     myMp.verEstadisticas();
+                    System.out.println("Soy hilo: "+myNumP+" me salgo y actualmente hay: "+ myMp.phaser.getRegisteredParties()+ " por los cuales esperar.");
                 }
             }
         }
@@ -978,9 +978,11 @@ public class Procesador extends Thread
     // MÉTODO RUN DEL HILO, AQUÍ SE HACE LA COHERENCIA CON EL HILO PRINCIPAL
     public void run() {
         //procesar();
+        
         while(pcA >= 0){
-            System.out.println("Hola, soy "+myNumP+" y tengo el PC "+pcA);
-            System.out.println(limit);
+            System.out.println("Soy hilo: "+myNumP+" agarro un hilo y actualmente hay: "+ myMp.phaser.getRegisteredParties()+ " por los cuales esperar.");
+            //System.out.println("Hola, soy "+myNumP+" y tengo el PC "+pcA);
+            //System.out.println(limit);
             procesar();
             System.out.println("lo hice");
             pcA = myMp.getFreePC();
@@ -995,6 +997,7 @@ public class Procesador extends Thread
                 }
             }*/
         }
+        myMp.phaser.arriveAndDeregister();
     }
 
     // SET DE SENTINELA PARA TERMINAR EL HILO QUE SE ESTÁ CORRIENDO
