@@ -239,14 +239,12 @@ public class Procesador extends Thread
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //
                         
                         estr.quitarProcesador(idBloqEnCache, myNumP);
-<<<<<<< HEAD
+
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
-                        
-=======
+
                         estr.verificarUncached(idBloqEnCache);
                         estr.signalD(estr.directorioPapa(numBloqMem));
->>>>>>> 29933aa2b1fde2c7926d186d4eb42a9739df39e7
                         setIdBloqueCache(dirBloqCache, dirNumBloqMem);
                         setEstBloqueCache(dirBloqCache, I);
                     }
@@ -263,7 +261,6 @@ public class Procesador extends Thread
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //
                         
                         guardarEnMemoria(idBloqEnCache, dirBloqCache);
-<<<<<<< HEAD
                         
                         estr.quitarProcesador(idBloqEnCache, myNumP);  
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
@@ -272,11 +269,10 @@ public class Procesador extends Thread
                         //estr.quitarProcesador(idBloqEnCache, myNumP);                        
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
                         
-=======
+
                         setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, U); //pero tengo q poner para quienes esta C
                         estr.quitarProcesador(idBloqEnCache, myNumP);                        
                         estr.signalD(estr.directorioPapa(numBloqMem));
->>>>>>> 29933aa2b1fde2c7926d186d4eb42a9739df39e7
                         setIdBloqueCache(dirBloqCache, dirNumBloqMem);
                         setEstBloqueCache(dirBloqCache, I);
                     }
@@ -906,10 +902,10 @@ public class Procesador extends Thread
                 DSUB(p1, p2, p3);
                 break;
             case 35:
-                LW(p1, p2, p3);
+                //LW(p1, p2, p3);
                 break;
             case 43:
-                SW(p1, p2, p3);
+                //SW(p1, p2, p3);
                 break;
             case 4:
                 BEQZ(p1, p3);
@@ -967,26 +963,24 @@ public class Procesador extends Thread
     }
 
     // MÉTODO RUN DEL HILO, AQUÍ SE HACE LA COHERENCIA CON EL HILO PRINCIPAL
-    public void run()
-    {
-        while (destruir == 0)
-        {
-            stop = 0;
+    public void run() {
+        //procesar();
+        while(pcA >= 0){
+            System.out.println("Hola, soy "+myNumP+" y tengo el PC "+pcA);
             System.out.println(limit);
             procesar();
             System.out.println("lo hice");
-            synchronized (this)
-            {
+            pcA = myMp.getFreePC();
+            limit = myMp.getActualPC();
+            /*synchronized(this){
                 notify();
                 stop = 0;
-                try
-                {
+                try{
                     wait();
-                } catch(InterruptedException e)
-                {
+                }catch(InterruptedException e){
                     System.out.println(e.getMessage());
                 }
-            }
+            }*/
         }
     }
 

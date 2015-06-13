@@ -7,12 +7,14 @@ import proy_arqui.CargadorArchivos;
 
 public class Multiprocesador {
     
-    public final CyclicBarrier barrera = new CyclicBarrier(1);
+    public final CyclicBarrier barrera = new CyclicBarrier(3);
     
     //estructuras para el multiprocesador
     private Simulacion sim;
     private Estructuras estructura = new Estructuras();
     private Procesador proc1 = new Procesador(1,this,estructura);
+    private Procesador proc2 = new Procesador(2,this,estructura);
+    private Procesador proc3 = new Procesador(3,this,estructura);
     private ArrayList<Integer> instrucciones = new ArrayList<Integer>();
     private ArrayList<Integer> pcs = new ArrayList<Integer>();
     private int numHilitos; //cantidad de archivos cargados por el usuario
@@ -25,6 +27,31 @@ public class Multiprocesador {
     //agrega un numero al arreglo de instrucciones global
     public void agregarInstruccion(int num){
         instrucciones.add(num);
+    }
+    
+    // paso de las PC´s
+    
+    public int getFreePC(){
+        int x;
+        if(pcs.size()>0){
+            x = pcs.get(0);
+            pcs.remove(0);
+        }else{
+            x=-1;
+        }
+        return x;
+    }
+    
+    public int getActualPC(){
+        if(pcs.size()==0){
+            return instrucciones.size();
+        }else{
+            return pcs.get(0);
+        }
+    }
+    
+    public int getSizePCs(){
+        return pcs.size();
     }
     
     //muestra las instrucciones cargadas en el multiprocesador
@@ -62,7 +89,32 @@ public class Multiprocesador {
     public void correrProgramas(){
         int pcActual;
         int limite = -1;
-        if(numHilitos!=0){
+        
+        int pc;
+        pc = getFreePC();
+        if(pc>=0){
+            proc1.setPcAyLimit(pc,getActualPC());
+        }else{
+            proc1.setPcAyLimit(-1,-1);
+        }
+        pc = getFreePC();
+        if(pc>=0){
+            proc2.setPcAyLimit(pc,getActualPC());
+        }else{
+            proc2.setPcAyLimit(-1,-1);
+        }
+        pc = getFreePC();
+        if(pc>=0){
+            proc3.setPcAyLimit(pc,getActualPC());
+        }else{
+            proc3.setPcAyLimit(-1,-1);
+        }
+        
+        proc1.start();
+        proc2.start();
+        proc3.start();
+        
+        /*if(numHilitos!=0){
             for(int i = 0; i < numHilitos; i++){
                 synchronized(proc1){
                     pcActual = pcs.get(i);
@@ -80,14 +132,25 @@ public class Multiprocesador {
                         System.out.println(e.getMessage());
                     }
                 }  
-            }
-            synchronized(proc1){
-                proc1.salir();
-                proc1.notify();
-            }
-            sim.setProc1((int) proc1.getId());
-            //verEstadisticas();
+            }*/
+            
+        try{
+            proc1.join();
+            proc2.join();
+            proc3.join();
+        }catch(InterruptedException e){
+            System.out.println(e.getMessage());
         }
+        /*
+        synchronized(proc1){
+            proc1.salir();
+            proc1.notify();
+        }*/
+
+        sim.setProc1((int) proc1.getId());
+        sim.setProc1((int) proc2.getId());
+        sim.setProc1((int) proc3.getId());
+        //verEstadisticas();
     }
     
     //SET DEL RELOJ EN LA VENTANA DE SIMULACIÓN
