@@ -241,15 +241,8 @@ public class Procesador extends Thread
                         estr.waitD(estr.directorioPapa(numBloqMem));
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //                        
                         estr.quitarProcesador(idBloqEnCache, myNumP);
-<<<<<<< HEAD
-
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
-
-=======
->>>>>>> aa16597a038b8e23fbeb57d558d9d659a907d8de
-                        estr.verificarUncached(idBloqEnCache);
-                        estr.signalD(estr.directorioPapa(numBloqMem));
                         setIdBloqueCache(dirBloqCache, dirNumBloqMem);
                         setEstBloqueCache(dirBloqCache, I);
                     }
@@ -265,21 +258,12 @@ public class Procesador extends Thread
                         estr.waitD(estr.directorioPapa(numBloqMem));                        
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //                        
                         guardarEnMemoria(idBloqEnCache, dirBloqCache);
-<<<<<<< HEAD
-                        
                         estr.quitarProcesador(idBloqEnCache, myNumP);  
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
                            
                         //setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, U); //pero tengo q poner para quienes esta C
                         //estr.quitarProcesador(idBloqEnCache, myNumP);                        
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
-                        
-
-=======
->>>>>>> aa16597a038b8e23fbeb57d558d9d659a907d8de
-                        setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, U); //pero tengo q poner para quienes esta C
-                        estr.quitarProcesador(idBloqEnCache, myNumP);                        
-                        estr.signalD(estr.directorioPapa(numBloqMem));
                         setIdBloqueCache(dirBloqCache, dirNumBloqMem);
                         setEstBloqueCache(dirBloqCache, I);
                     }
