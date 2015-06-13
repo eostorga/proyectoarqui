@@ -147,6 +147,7 @@ public class Estructuras
                 } catch (Exception ex) {
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                break;
             }
             case 2:
             {
@@ -155,6 +156,7 @@ public class Estructuras
                 } catch (Exception ex) {
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                break;
             }
             case 3:
             {
@@ -163,6 +165,7 @@ public class Estructuras
                 } catch (Exception ex) {
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                break;
             }
         }
     }
