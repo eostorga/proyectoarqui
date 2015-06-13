@@ -4,10 +4,13 @@ package proy_arqui;
 import java.util.ArrayList;
 import java.util.concurrent.CyclicBarrier;
 import proy_arqui.CargadorArchivos;
+import java.util.concurrent.Phaser;
 
 public class Multiprocesador {
     
-    public final CyclicBarrier barrera = new CyclicBarrier(3);
+    //public final CyclicBarrier barrera = new CyclicBarrier(1);
+    public final Phaser phaser = new Phaser();
+   
     
     //estructuras para el multiprocesador
     private Simulacion sim;
@@ -94,18 +97,21 @@ public class Multiprocesador {
         pc = getFreePC();
         if(pc>=0){
             proc1.setPcAyLimit(pc,getActualPC());
+            phaser.register();
         }else{
             proc1.setPcAyLimit(-1,-1);
         }
         pc = getFreePC();
         if(pc>=0){
             proc2.setPcAyLimit(pc,getActualPC());
+            phaser.register();
         }else{
             proc2.setPcAyLimit(-1,-1);
         }
         pc = getFreePC();
         if(pc>=0){
             proc3.setPcAyLimit(pc,getActualPC());
+            phaser.register();
         }else{
             proc3.setPcAyLimit(-1,-1);
         }
