@@ -243,17 +243,15 @@ public class Procesador extends Thread
                         estr.waitD(estr.directorioPapa(numBloqMem));
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //                        
                         estr.quitarProcesador(idBloqEnCache, myNumP);
-<<<<<<< HEAD
 
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
 
                         estr.verificarUncached(idBloqEnCache);
                         estr.signalD(estr.directorioPapa(numBloqMem));
-=======
+
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
->>>>>>> 73119d903ca3be5f22adc4b848bf779ca912ea72
                         setIdBloqueCache(dirBloqCache, dirNumBloqMem);
                         setEstBloqueCache(dirBloqCache, I);
                     }
@@ -269,23 +267,18 @@ public class Procesador extends Thread
                         estr.waitD(estr.directorioPapa(numBloqMem));                        
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //                        
                         guardarEnMemoria(idBloqEnCache, dirBloqCache);
-<<<<<<< HEAD
-   
-=======
->>>>>>> 73119d903ca3be5f22adc4b848bf779ca912ea72
+
                         estr.quitarProcesador(idBloqEnCache, myNumP);  
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
                            
                         //setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, U); //pero tengo q poner para quienes esta C
                         //estr.quitarProcesador(idBloqEnCache, myNumP);                        
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
-<<<<<<< HEAD
                         
                         setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, U); //pero tengo q poner para quienes esta C
                         estr.quitarProcesador(idBloqEnCache, myNumP);                        
                         estr.signalD(estr.directorioPapa(numBloqMem));
-=======
->>>>>>> 73119d903ca3be5f22adc4b848bf779ca912ea72
+
                         setIdBloqueCache(dirBloqCache, dirNumBloqMem);
                         setEstBloqueCache(dirBloqCache, I);
                     }
