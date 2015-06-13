@@ -5,6 +5,7 @@ import java.util.concurrent.Semaphore;
 
 public class Procesador extends Thread
 {
+    public int deboDeregistrarme = 0;
     private static Multiprocesador myMp;
     private final Estructuras estr;
     private int myNumP;
@@ -12,7 +13,7 @@ public class Procesador extends Thread
     private int limit;
     private boolean puedoSeguir = true;
     private boolean final_programa = false;
-    private int ciclo = 0;
+    //private int ciclo = 0;
     private int stop = 0;
     private int cont = 0;
     private int destruir = 0;
@@ -138,7 +139,8 @@ public class Procesador extends Thread
             {
                 myMp.phaser.arriveAndAwaitAdvance();
                 //myMp.barrera.await();
-                ciclo++;
+                //ciclo++;
+                myMp.ciclo++;
                 cont++;
                 //System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
             } catch(Exception e)
@@ -168,7 +170,8 @@ public class Procesador extends Thread
             {
                 myMp.phaser.arriveAndAwaitAdvance();
                 //myMp.barrera.await();
-                ciclo++;
+                //ciclo++;
+                myMp.ciclo++;
                 cont++;
                 //System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
             } catch(Exception e)
@@ -914,7 +917,7 @@ public class Procesador extends Thread
                 DSUB(p1, p2, p3);
                 break;
             case 35:
-                //LW(p1, p2, p3);
+                LW(p1, p2, p3);
                 break;
             case 43:
                 //SW(p1, p2, p3);
@@ -926,7 +929,6 @@ public class Procesador extends Thread
                 BNEZ(p1, p3);
                 break;
             case 63:
-                System.out.println("CODIGO 63 DE SALIDA");
                 FIN();
                 break;
         }
@@ -936,7 +938,8 @@ public class Procesador extends Thread
             //myMp.barrera.await();
             myMp.phaser.arriveAndAwaitAdvance();
             //myMp.phaser.arriveAndDeregister();
-            ciclo++;
+            //ciclo++;
+            myMp.ciclo++;
             cont++;
             //System.out.println("Ciclo #"+ciclo+". Puede cambiar de instrucción.\n");
         } catch(Exception e)
@@ -958,7 +961,8 @@ public class Procesador extends Thread
     public void procesar()
     {
         int cont = 0;
-        myMp.setClock(ciclo);
+        //myMp.setClock(ciclo);
+        myMp.setClock();
         stop = 0;
         IR = PC = pcA;
         
@@ -972,7 +976,7 @@ public class Procesador extends Thread
                 if (stop == 1) 
                 { 
                     //verEstado();
-                    myMp.verEstadisticas();
+                    myMp.verEstadisticas(myNumP);
                     System.out.println("Soy hilo: "+myNumP+" me salgo y actualmente hay: "+ myMp.phaser.getRegisteredParties()+ " por los cuales esperar.");
                 }
             }
@@ -1001,7 +1005,8 @@ public class Procesador extends Thread
                 }
             }*/
         }
-        myMp.phaser.arriveAndDeregister();
+        if(deboDeregistrarme == 1)
+            myMp.phaser.arriveAndDeregister();
     }
 
     // SET DE SENTINELA PARA TERMINAR EL HILO QUE SE ESTÁ CORRIENDO
@@ -1014,6 +1019,8 @@ public class Procesador extends Thread
     public String verEstado()
     {
         String estado = "";
+        
+        estado += "PROCESADOR " + myNumP + ":\n";
         estado += "El PC es: " + PC + "\n";
         estado += "El IR es: " + IR + "\n";
         estado += "Los registros de procesador son:\n";
@@ -1045,8 +1052,8 @@ public class Procesador extends Thread
         }
         
         estado += "\n";
-        estado += "La cantidad de ciclos que tardó el hilo es: " + cont + "\n";
-        System.out.println(estado);
+        estado += "La cantidad de ciclos que tardó el hilo es: " + cont + "\n\n";
+        //System.out.println(estado);
         return estado;
     }
 

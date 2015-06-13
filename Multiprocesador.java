@@ -10,7 +10,7 @@ public class Multiprocesador {
     
     //public final CyclicBarrier barrera = new CyclicBarrier(1);
     public final Phaser phaser = new Phaser();
-   
+    int ciclo = 0; 
     
     //estructuras para el multiprocesador
     private Simulacion sim;
@@ -25,6 +25,7 @@ public class Multiprocesador {
     //constructor
     public Multiprocesador(Simulacion sim){
         this.sim = sim;
+        //estructura.Estructuras();
     }
     
     //agrega un numero al arreglo de instrucciones global
@@ -97,6 +98,7 @@ public class Multiprocesador {
         pc = getFreePC();
         if(pc>=0){
             proc1.setPcAyLimit(pc,getActualPC());
+            proc1.deboDeregistrarme = 1;
             phaser.register();
         }else{
             proc1.setPcAyLimit(-1,-1);
@@ -104,6 +106,7 @@ public class Multiprocesador {
         pc = getFreePC();
         if(pc>=0){
             proc2.setPcAyLimit(pc,getActualPC());
+            proc2.deboDeregistrarme = 1;
             phaser.register();
         }else{
             proc2.setPcAyLimit(-1,-1);
@@ -111,6 +114,7 @@ public class Multiprocesador {
         pc = getFreePC();
         if(pc>=0){
             proc3.setPcAyLimit(pc,getActualPC());
+            proc3.deboDeregistrarme = 1;
             phaser.register();
         }else{
             proc3.setPcAyLimit(-1,-1);
@@ -154,21 +158,28 @@ public class Multiprocesador {
         }*/
 
         sim.setProc1((int) proc1.getId());
-        sim.setProc1((int) proc2.getId());
-        sim.setProc1((int) proc3.getId());
+        sim.setProc2((int) proc2.getId());
+        sim.setProc3((int) proc3.getId());
         //verEstadisticas();
     }
     
     //SET DEL RELOJ EN LA VENTANA DE SIMULACIÓN
-    public void setClock(int r)
+    /*public void setClock(int r)
     {
         sim.setReloj(r);
+    }*/
+    public void setClock()
+    {
+        sim.setReloj(ciclo);
     }
     
     //SET DE LAS ESTADÍSTICAS EN LA VENTANA DE SIMULACIÓN
-    public void verEstadisticas()
+    public void verEstadisticas(int numP)
     {
-        sim.setEstadisticas(proc1.verEstado());
+        if(numP==1) sim.setEstadisticas(proc1.verEstado());
+        if(numP==2) sim.setEstadisticas(proc2.verEstado());
+        if(numP==3) sim.setEstadisticas(proc3.verEstado());
+        
     }
     
     public static void main(String[] args)

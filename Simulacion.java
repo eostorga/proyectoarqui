@@ -140,6 +140,12 @@ public class Simulacion extends javax.swing.JFrame {
     public void setProc1(int p){
         jTextField1.setText(Integer.toString(p));
     }
+    public void setProc2(int p){
+        jTextField2.setText(Integer.toString(p));
+    }
+    public void setProc3(int p){
+        jTextField3.setText(Integer.toString(p));
+    }
     
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:

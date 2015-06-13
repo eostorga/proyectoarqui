@@ -74,7 +74,7 @@ public class Estructuras
     ////////////////////////////////////////////////////////////////////////////
     
     // CONSTRUCTOR DE CLASE ESTRUCTURAS
-    public void Estructuras()
+    public Estructuras()
     {
         inicializarDirs();
         inicializarCaches();
@@ -82,13 +82,13 @@ public class Estructuras
     
     public void inicializarDirs()
     {
-        for(int i = 0; i < 32; i+=4)
+        for(int i = 0; i < 8; i++)
         {
-            dir1[i][B] = i;
+            dir1[i][B] = (i*4);
             dir1[i][E] = U;
-            dir2[i][B] = 32+i;
+            dir2[i][B] = 32+(i*4);
             dir2[i][E] = U;
-            dir3[i][B] = 64+i;
+            dir3[i][B] = 64+(i*4);
             dir3[i][E] = U;
         }
     }
