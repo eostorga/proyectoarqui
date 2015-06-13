@@ -14,6 +14,7 @@ public class Procesador extends Thread
     private boolean puedoSeguir = true;
     private boolean final_programa = false;
     //private int ciclo = 0;
+    private int cicloInicio = -1;
     private int stop = 0;
     private int cont = 0;
     private int destruir = 0;
@@ -962,7 +963,7 @@ public class Procesador extends Thread
     {
         int cont = 0;
         //myMp.setClock(ciclo);
-        myMp.setClock();
+        cicloInicio = myMp.setClock();
         stop = 0;
         IR = PC = pcA;
         
@@ -1021,6 +1022,9 @@ public class Procesador extends Thread
         String estado = "";
         
         estado += "PROCESADOR " + myNumP + ":\n";
+        
+        estado += "El reloj inicia en " + cicloInicio + ":\n";
+        
         estado += "El PC es: " + PC + "\n";
         estado += "El IR es: " + IR + "\n";
         estado += "Los registros de procesador son:\n";

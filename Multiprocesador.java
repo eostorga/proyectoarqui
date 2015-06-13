@@ -168,9 +168,10 @@ public class Multiprocesador {
     {
         sim.setReloj(r);
     }*/
-    public void setClock()
+    public int setClock()
     {
-        sim.setReloj(ciclo);
+        //sim.setReloj(ciclo);
+        return ciclo;
     }
     
     //SET DE LAS ESTADÍSTICAS EN LA VENTANA DE SIMULACIÓN

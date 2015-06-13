@@ -155,9 +155,10 @@ public class Simulacion extends javax.swing.JFrame {
         jTextArea1.append(text);
     }
     
+    /*
     public void setReloj(int r){
-        jTextArea1.append("El reloj inicia en: "+Integer.toString(r)+"\n");
-    }
+        //jTextArea1.append("El reloj inicia en: "+Integer.toString(r)+"\n");
+    }*/
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
