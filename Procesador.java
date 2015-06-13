@@ -626,7 +626,7 @@ public class Procesador extends Thread
                     {
                         System.out.println("AGARRÉ EL DIRECTORIO");
                         estr.waitD(estr.directorioPapa(numBloqMem));
-                        if (estr.getEstadoBloqueDir(numBloqMem) == C)
+                        if (estr.getEstadoBloqueDir(dirBloqCache) == C)
                         {   
                             System.out.println("ESTÁ COMPARTIDO");
                             cargarACache(dirNumBloqMem, dirBloqCache);
@@ -638,7 +638,7 @@ public class Procesador extends Thread
                             setPalabraCache(dirBloqCache, numPalabra, regs[X]);
                             estr.signalC(myNumP);
                             estr.signalD(estr.directorioPapa(numBloqMem));
-                        } else if(estr.getEstadoBloqueDir(numBloqMem) == M)
+                        } else if(estr.getEstadoBloqueDir(dirBloqCache) == M)
                         {   System.out.println("MODIFICADO");
                             int cacheDuena = estr.consultarDuenoBloqueDir(numBloqMem);
                             if (estr.disponibleC(cacheDuena) == 0)
@@ -663,7 +663,7 @@ public class Procesador extends Thread
                                 estr.signalC(myNumP);
                                 estr.signalD(estr.directorioPapa(numBloqMem));
                             }
-                        } else if(estr.getEstadoBloqueDir(numBloqMem) == U)
+                        } else if(estr.getEstadoBloqueDir(dirBloqCache) == U)
                         {
                             System.out.println("ESTÁ UNCACHED");
                             // El caso en que este uncached y aqui terminamos antes de que iva lo haga mas complicado el trabajo
@@ -921,7 +921,7 @@ public class Procesador extends Thread
                 LW(p1, p2, p3);
                 break;
             case 43:
-                //SW(p1, p2, p3);
+                SW(p1, p2, p3);
                 break;
             case 4:
                 BEQZ(p1, p3);
