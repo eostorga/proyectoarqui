@@ -206,27 +206,31 @@ public class Procesador extends Thread
         }
     }
     
+    // Leer una palabra
+    // LW RX, n(RY)
+    // Rx  M(n + (Ry))
+    // Y X n
     public void LW(int Y, int X, int n)
     {
         int numByte = regs[Y] + n;                                  // Numero del byte que quiero leer de memoria 
         int numBloqMem = Math.floorDiv(numByte, 16);                // Indice del bloque en memoria (0-24)
         int numPalabra = (numByte % 16) / 4;
         int dirBloqCache = numBloqMem % 4;                          // Indice donde debe estar el bloque en cache
-        //int idBloqEnCache = getIdBloqueCache(numBloqMem); 
         int idBloqEnCache = getIdBloqueCache(dirBloqCache);         // ID del bloque que ocupa actualmente esa direccion en cache
         int estadoBloqEnCache = getEstBloqueCache(dirBloqCache);    // Estado del bloque que ocupa esa dir de cache ('M', 'C', 'I')
         int dirNumBloqMem = numBloqMem * 4;                         // Conversion para mapear la direccion inicial del bloque en memoria
 
         // BLOQUEO MI CACHÉ
         estr.waitC(myNumP);
-        
-        //Algunas veces se mete en este caso, otras no. 
+        //System.out.println(getEstDir(numBloqMem));
+        System.out.println("INICIA LW");
         //CASO 1: HAY OTRO BLOQUE DIFERENTE PERO VÁLIDO
         if(idBloqEnCache != dirNumBloqMem && idBloqEnCache != -1)
         {
             switch(estadoBloqEnCache)
             {
                 case C:
+                    System.out.println("HAY OTRO BLOQUE -> ESTÁ COMPARTIDO");
                     // Para saber si el directorio que voy a utilizar esta ocupado o no
                     if (estr.disponibleD(estr.directorioPapa(numBloqMem)) == 0)
                     {
@@ -235,14 +239,15 @@ public class Procesador extends Thread
                     } else
                     {
                         estr.waitD(estr.directorioPapa(numBloqMem));
-                        
-                        // USA DIRECTORIO EN EL SIGUIENTE CICLO //
-                        
+                        // USA DIRECTORIO EN EL SIGUIENTE CICLO //                        
                         estr.quitarProcesador(idBloqEnCache, myNumP);
+<<<<<<< HEAD
 
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
 
+=======
+>>>>>>> aa16597a038b8e23fbeb57d558d9d659a907d8de
                         estr.verificarUncached(idBloqEnCache);
                         estr.signalD(estr.directorioPapa(numBloqMem));
                         setIdBloqueCache(dirBloqCache, dirNumBloqMem);
@@ -250,17 +255,17 @@ public class Procesador extends Thread
                     }
                 break;
                 case M:
+                    System.out.println("HAY OTRO BLOQUE -> ESTÁ MODIFICADO");
                     if (estr.disponibleD(estr.directorioPapa(numBloqMem)) == 0)
                     {
                         estr.signalC(myNumP);
                         LW(Y, X, n);
                     } else
                     {
-                        estr.waitD(estr.directorioPapa(numBloqMem));
-                        
-                        // USA DIRECTORIO EN EL SIGUIENTE CICLO //
-                        
+                        estr.waitD(estr.directorioPapa(numBloqMem));                        
+                        // USA DIRECTORIO EN EL SIGUIENTE CICLO //                        
                         guardarEnMemoria(idBloqEnCache, dirBloqCache);
+<<<<<<< HEAD
                         
                         estr.quitarProcesador(idBloqEnCache, myNumP);  
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
@@ -270,6 +275,8 @@ public class Procesador extends Thread
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
                         
 
+=======
+>>>>>>> aa16597a038b8e23fbeb57d558d9d659a907d8de
                         setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, U); //pero tengo q poner para quienes esta C
                         estr.quitarProcesador(idBloqEnCache, myNumP);                        
                         estr.signalD(estr.directorioPapa(numBloqMem));
@@ -278,25 +285,27 @@ public class Procesador extends Thread
                     }
                 break;
                 case I:
-                    //es como para que mas abajo se vea q si tengo el bloque pero invalido y q hay q traerlo
+                    System.out.println("HAY OTRO BLOQUE -> ESTÁ INVÁLIDO");
                     setIdBloqueCache(dirBloqCache, dirNumBloqMem);
                     setEstBloqueCache(dirBloqCache, I);
                 break;
             }
         }
         
-        //Siempre se mete en este caso.
         //CASO 2: ESTÁ EL BLOQUE BLOQUE (HIT) O NO HAY NINGUNO
         if(idBloqEnCache == dirNumBloqMem || idBloqEnCache == -1)
         {
+            System.out.println("ESTÁ EL BLOQUE O NO HAY NINGUNO");
             switch(estadoBloqEnCache)
             {
                 case C:
+                    System.out.println("ESTÁ EL BLOQUE -> COMPARTIDO");
                     // Carga la palabra que se ocupa al registro
                     regs[X] = getPalabraCache(dirBloqCache, numPalabra);
                     estr.signalC(myNumP);
                 break;
                 case M:
+                    System.out.println("ESTÁ EL BLOQUE -> MODIFICADO");
                     if (estr.disponibleD(estr.directorioPapa(numBloqMem)) == 0)
                     {
                         estr.signalC(myNumP);
@@ -306,14 +315,15 @@ public class Procesador extends Thread
                         estr.waitD(estr.directorioPapa(numBloqMem));
                         guardarEnMemoria(getIdBloqueCache(dirBloqCache), dirBloqCache);
                         setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, C);
-                        estr.anadirProcesador(idBloqEnCache, myNumP); //extra xq se supone q yo ya lo tenia modificado      
-                        // Carga la palabra que se ocupa al registro
+                        estr.anadirProcesador(idBloqEnCache, myNumP);       
+
                         regs[X] = getPalabraCache(dirBloqCache, numPalabra);
                         estr.signalC(myNumP);
                         estr.signalD(estr.directorioPapa(numBloqMem));
                     }
                 break;
                 case I:
+                    System.out.println("ESTÁ EL BLOQUE -> INVÁLIDO");
                     if (estr.disponibleD(estr.directorioPapa(numBloqMem)) == 0)
                     {
                         estr.signalC(myNumP);
@@ -321,18 +331,21 @@ public class Procesador extends Thread
                     } else
                     {
                         estr.waitD(estr.directorioPapa(numBloqMem));
-                        if (estr.getEstadoBloqueDir(numBloqMem) == C)
+                        System.out.println(dirBloqCache);
+                        if (estr.getEstadoBloqueDir(dirBloqCache) == C)
                         {
+                            System.out.println("ESTADO DIRECTORIO -> COMPARTIDO");
                             cargarACache(dirNumBloqMem, dirBloqCache);
                             setIdBloqueCache(dirBloqCache, dirNumBloqMem);
                             setEstBloqueCache(dirBloqCache, C);
                             estr.anadirProcesador(idBloqEnCache, myNumP);
-                            // Carga la palabra que se ocupa al registro
+
                             regs[X] = getPalabraCache(dirBloqCache, numPalabra);
                             estr.signalD(estr.directorioPapa(numBloqMem));
                             estr.signalC(myNumP);
-                        } else if (estr.getEstadoBloqueDir(numBloqMem) == M)
+                        } else if (estr.getEstadoBloqueDir(dirBloqCache) == M)
                         {
+                            System.out.println("ESTADO DIRECTORIO -> MODIFICADO");
                             int cacheDuena = estr.consultarDuenoBloqueDir(numBloqMem);
                             if (estr.disponibleC(cacheDuena) == 0)
                             {
@@ -356,8 +369,9 @@ public class Procesador extends Thread
                                 estr.signalC(myNumP);
                                 estr.signalD(estr.directorioPapa(numBloqMem));
                             }
-                        } else
+                        } else if (estr.getEstadoBloqueDir(dirBloqCache) == U)
                         {
+                            System.out.println("ESTADO DIRECTORIO -> UNCACHED");
                             estr.cargarACache(myNumP, dirNumBloqMem, dirBloqCache);
                             setIdBloqueCache(dirBloqCache, dirNumBloqMem);
                             setEstBloqueCache(dirBloqCache, C);
@@ -583,6 +597,13 @@ public class Procesador extends Thread
                         setEstBloqueCache(dirBloqCache, M);  
                         
                         estr.signalC(myNumP);
+                        
+                        // Quitar compartidos
+                        // Envío el estado del directorio que estaba modificado
+                        // libero el directorio
+                        // guardo a memoria
+                        // me pongo como modificado y me modifico
+                        // me libero
                     }
                     break;
                 case M:
@@ -605,20 +626,15 @@ public class Procesador extends Thread
                         if (estr.getEstadoBloqueDir(numBloqMem) == C)
                         {   
                             System.out.println("ESTÁ COMPARTIDO");
-                            
-                            estr.quitarCompartidos(numBloqMem, myNumP);
-                            estr.anadirProcesador(numBloqMem, myNumP);
-                            setEstDir(estr.directorioPapa(numBloqMem), numBloqMem, M);
                             cargarACache(dirNumBloqMem, dirBloqCache);
                             setIdBloqueCache(dirBloqCache, dirNumBloqMem);
                             setEstBloqueCache(dirBloqCache, C);
-                           
-                            setPalabraCache(dirBloqCache, numPalabra, regs[X]);  
-                            setEstBloqueCache(dirBloqCache, M);
+                            estr.anadirProcesador(numBloqMem, myNumP);
                             
+                            // Carga la palabra que se ocupa al registro
+                            setPalabraCache(dirBloqCache, numPalabra, regs[X]);
                             estr.signalC(myNumP);
                             estr.signalD(estr.directorioPapa(numBloqMem));
-                        
                         } else if(estr.getEstadoBloqueDir(numBloqMem) == M)
                         {   System.out.println("MODIFICADO");
                             int cacheDuena = estr.consultarDuenoBloqueDir(numBloqMem);
@@ -631,19 +647,16 @@ public class Procesador extends Thread
                             {
                                 estr.waitC(cacheDuena);  //si la logro agarrar
                                 estr.guardarEnMemoria(cacheDuena, numBloqMem, dirBloqCache);
-                                estr.setEstBloqueCache(cacheDuena, numBloqMem, I);
+                                estr.setEstBloqueCache(cacheDuena, numBloqMem, C);
                                 estr.signalC(cacheDuena);
-                                
+                                setEstDir(estr.directorioPapa(numBloqMem), numBloqMem, C);
+                                // Pero tengo q poner para quienes esta C
                                 cargarACache(dirNumBloqMem, dirBloqCache);
                                 setIdBloqueCache(dirBloqCache, dirNumBloqMem);
-                                setEstBloqueCache(dirBloqCache, M);
-                                
-                                setEstDir(estr.directorioPapa(numBloqMem), numBloqMem, M);
-                                estr.quitarProcesador(numBloqMem, cacheDuena);
+                                setEstBloqueCache(dirBloqCache, C);
                                 estr.anadirProcesador(numBloqMem, myNumP);
-                         
+                                // Carga la palabra que se ocupa al registro
                                 setPalabraCache(dirBloqCache, numPalabra, regs[X]);
-                                
                                 estr.signalC(myNumP);
                                 estr.signalD(estr.directorioPapa(numBloqMem));
                             }
@@ -653,13 +666,13 @@ public class Procesador extends Thread
                             // El caso en que este uncached y aqui terminamos antes de que iva lo haga mas complicado el trabajo
                             estr.cargarACache(myNumP, dirNumBloqMem, dirBloqCache);
                             setIdBloqueCache(dirBloqCache, dirNumBloqMem);
-                            setEstBloqueCache(dirBloqCache, M);
-                            
-                            setEstDir(estr.directorioPapa(numBloqMem), numBloqMem, M);
+                            setEstBloqueCache(dirBloqCache, C);
+                            setEstDir(estr.directorioPapa(numBloqMem), numBloqMem, C);
+                            // Pero tengo q poner para quienes esta C
                             estr.anadirProcesador(numBloqMem, myNumP);
-                            
+                            // Carga la palabra que se ocupa al registro
                             setPalabraCache(dirBloqCache, numPalabra, regs[X]);
-                            
+                            //regs[X] = getPalabraCache(dirBloqCache, numPalabra);
                             estr.signalC(myNumP);
                             estr.signalD(estr.directorioPapa(numBloqMem));
                         }

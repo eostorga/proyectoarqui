@@ -99,13 +99,10 @@ public class Estructuras
         {
             setEstBloqueCache(1, i, I);
             setIdBloqueCache(1, i, -1);
-            //setIdBloqueCache(1, i, I);
             setEstBloqueCache(2, i, I);
             setIdBloqueCache(2, i, -1);
-            //setIdBloqueCache(2, i, I);
             setEstBloqueCache(3, i, I);
             setIdBloqueCache(3, i, -1);
-            //setIdBloqueCache(3, i, I);
         }
     }
     
@@ -448,25 +445,19 @@ public class Estructuras
     public int getEstadoBloqueDir(int idBloque)
     {
         int indiceDir, estado = -1;
-        if(idBloque >= 0 && idBloque <=31)
+        if(idBloque >= 0 && idBloque <=7)
         {
-            /* |0|4|8|12|16|20|24|28| */
             indiceDir = idBloque / 4;
-            // indiceDir = idBloque % 4;
             estado = getEntradaDir(1,indiceDir,E);
         }
-        if(idBloque >= 32 && idBloque <=63)
+        if(idBloque >= 8 && idBloque <=15)
         {
-            /* |32|36|40|44|48|52|56|60| */
             indiceDir = (idBloque-32)/4;
-            // indiceDir = (idBloque-32) % 4;
             estado = getEntradaDir(2,indiceDir,E);
         }
-        if(idBloque >= 64 && idBloque <=95)
+        if(idBloque >= 16 && idBloque <=23)
         {
-            /* |64|68|72|76|80|84|88|92| */
             indiceDir = (idBloque-64)/4;
-            // indiceDir = (idBloque-64) % 4;
             estado = getEntradaDir(3,indiceDir,E);
         }
         return estado;
