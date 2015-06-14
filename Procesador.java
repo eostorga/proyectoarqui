@@ -800,12 +800,22 @@ public class Procesador extends Thread
         
         estado += "La memoria de datos contiene:\n";
         
-        for (int i = 0; i < 32; i++)
+        estado += "Memoria comp P1:\n";
+        for (int i = 0; i < 32; i+=4)
         {
-            estado += getPalabraMem(i) + ", ";
+            estado += getPalabraMem(i) + ", " + getPalabraMem(i+1) + ", " +getPalabraMem(i+2) + ", " +getPalabraMem(i+3) + "\n";
+        }
+        estado += "Memoria comp P2:\n";
+        for (int i = 32; i < 64; i+=4)
+        {
+            estado += getPalabraMem(i) + ", " + getPalabraMem(i+1) + ", " +getPalabraMem(i+2) + ", " +getPalabraMem(i+3) + "\n";
+        }
+        estado += "Memoria comp P3:\n";
+        for (int i = 64; i < 96; i+=4)
+        {
+            estado += getPalabraMem(i) + ", " + getPalabraMem(i+1) + ", " +getPalabraMem(i+2) + ", " +getPalabraMem(i+3) + "\n";
         }
         
-        estado += "\n";
         estado += "La cantidad de ciclos que tardó el hilo es: " + cont + "\n\n";
         //System.out.println(estado);
         return estado;
