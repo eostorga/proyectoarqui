@@ -214,7 +214,8 @@ public class Estructuras
                 try {
                     SemaforoCache1.acquire();
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.printf("WAS interrupted\n");
                 }
             }
             break;
@@ -223,7 +224,8 @@ public class Estructuras
                 try {
                     SemaforoCache2.acquire();
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.printf("WAS interrupted\n");
                 }
             }
             break;
@@ -232,7 +234,8 @@ public class Estructuras
                 try {
                     SemaforoCache3.acquire();
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.printf("WAS interrupted\n");
                 }
             }
             break;
