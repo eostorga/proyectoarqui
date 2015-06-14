@@ -323,8 +323,18 @@ public class Procesador extends Thread
                     } else
                     {
                         estr.waitD(estr.directorioPapa(idBloqEnCache));
-                        //guardarEnMemoria(getIdBloqueCache(dirBloqCache), dirBloqCache);
-                        guardarEnMemoria(idBloqEnCache, dirBloqCache);
+                        
+						// USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        try{
+                            myMp.phaser.arriveAndAwaitAdvance();
+                            myMp.ciclo++;
+                            cont++;
+                        } catch(Exception e){
+                            e.printStackTrace();
+                        }
+                        // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        
+						guardarEnMemoria(idBloqEnCache, dirBloqCache);
                         setEstDir(estr.directorioPapa(idBloqEnCache), idBloqEnCache, C); //
                         estr.anadirProcesador(idBloqEnCache, myNumP);       
                         setEstBloqueCache(dirBloqCache, C);
@@ -346,6 +356,17 @@ public class Procesador extends Thread
                     {
                         System.out.println("        ESTADO DIRECTORIO");
                         estr.waitD(estr.directorioPapa(idBloqEnCache));
+						
+						// USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        try{
+                            myMp.phaser.arriveAndAwaitAdvance();
+                            myMp.ciclo++;
+                            cont++;
+                        } catch(Exception e){
+                            e.printStackTrace();
+                        }
+                        // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
+						
                         if (estr.getEstadoBloqueDir(numBloqMem) == C) //quiero el estado en el dir del bloque 0-24
                         {
                             System.out.println("            COMPARTIDO");
