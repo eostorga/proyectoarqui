@@ -458,24 +458,25 @@ public class Estructuras
     //FIN DE LA SECCION DE SETS Y GETS
     ////////////////////////////////////////////////////////////////////////////
     
-    // ESTE METODO DEVUELVE EL ESTADO EN EL DIRECTORIO DE UN BLOQUE CON ID = DIR MEM BLOQUE
+    // ESTE METODO DEVUELVE EL ESTADO EN EL DIRECTORIO DE UN BLOQUE CON ID = DIR MEM BLOQUE (0-24)
     // DEVUELVE: 'C', 'M', 'U'
     public int getEstadoBloqueDir(int idBloque)
     {
         int indiceDir, estado = -1;
+        indiceDir = idBloque % 8;
         if(idBloque >= 0 && idBloque <=7)
         {
-            indiceDir = idBloque / 4;
+            //indiceDir = idBloque / 4;
             estado = getEntradaDir(1,indiceDir,E);
         }
         if(idBloque >= 8 && idBloque <=15)
         {
-            indiceDir = (idBloque-32)/4;
+            //indiceDir = (idBloque-32)/4;
             estado = getEntradaDir(2,indiceDir,E);
         }
         if(idBloque >= 16 && idBloque <=23)
         {
-            indiceDir = (idBloque-64)/4;
+            //indiceDir = (idBloque-64)/4;
             estado = getEntradaDir(3,indiceDir,E);
         }
         return estado;
