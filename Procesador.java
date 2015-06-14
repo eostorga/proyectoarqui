@@ -248,11 +248,11 @@ public class Procesador extends Thread
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //                        
                         estr.quitarProcesador(idBloqEnCache, myNumP);
 
-                        estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
-                        estr.signalD(estr.directorioPapa(idBloqEnCache));
+                        //estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
+                        //estr.signalD(estr.directorioPapa(idBloqEnCache));
 
-                        estr.verificarUncached(idBloqEnCache);
-                        estr.signalD(estr.directorioPapa(numBloqMem));
+                        //estr.verificarUncached(idBloqEnCache);
+                        //estr.signalD(estr.directorioPapa(numBloqMem));
 
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
                         estr.signalD(estr.directorioPapa(idBloqEnCache));
@@ -293,6 +293,7 @@ public class Procesador extends Thread
                     setEstBloqueCache(dirBloqCache, I);
                 break;
             }
+            idBloqEnCache = dirNumBloqMem;
         }
         
         //CASO 2: ESTÁ EL BLOQUE BLOQUE (HIT) O NO HAY NINGUNO
@@ -315,6 +316,7 @@ public class Procesador extends Thread
                         LW(Y, X, n);
                     } else
                     {
+                        
                         estr.waitD(estr.directorioPapa(numBloqMem));
                         guardarEnMemoria(getIdBloqueCache(dirBloqCache), dirBloqCache);
                         setEstDir(estr.directorioPapa(idBloqEnCache), numBloqMem, C);
@@ -419,13 +421,29 @@ public class Procesador extends Thread
                         SW(Y, X, n);
                     }else
                     {
+                        /*
                         estr.waitD(estr.directorioPapa(numBloqMem));
                         estr.quitarProcesador(idBloqEnCache, myNumP);
                         estr.verificarUncached(idBloqEnCache);
                         estr.signalD(estr.directorioPapa(numBloqMem));
                         
                         setIdBloqueCache(dirBloqCache, dirNumBloqMem);
-                        setEstBloqueCache(dirBloqCache, I);                      
+                        setEstBloqueCache(dirBloqCache, I);       */
+                        
+                        estr.waitD(estr.directorioPapa(numBloqMem));
+                        // USA DIRECTORIO EN EL SIGUIENTE CICLO //                        
+                        estr.quitarProcesador(idBloqEnCache, myNumP);
+
+                        //estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
+                        //estr.signalD(estr.directorioPapa(idBloqEnCache));
+
+                        //estr.verificarUncached(idBloqEnCache);
+                        //estr.signalD(estr.directorioPapa(numBloqMem));
+
+                        estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
+                        estr.signalD(estr.directorioPapa(idBloqEnCache));
+                        setIdBloqueCache(dirBloqCache, dirNumBloqMem);
+                        setEstBloqueCache(dirBloqCache, I);
                     }
                 break;
                 case M:
@@ -450,6 +468,7 @@ public class Procesador extends Thread
                     setEstBloqueCache(dirBloqCache, I);
                 break;
             }
+            idBloqEnCache = dirNumBloqMem;
         }
         
         //CASO 2: ESTÁ EL BLOQUE BLOQUE (HIT) O NO HAY NINGUNO
@@ -582,6 +601,8 @@ public class Procesador extends Thread
     //X 0 n
     public void BNEZ(int X, int n)
     {
+        //System.out.println("El registro 5 vale: "+regs[5]+"\n");
+        //System.out.println("El registro 20 vale: "+regs[20]+"\n");
         if (regs[X] != 0)
         {
             if (n >= 0)

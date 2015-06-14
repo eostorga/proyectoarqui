@@ -119,6 +119,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
             case 2:
             {
                 try {
@@ -127,6 +128,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
             case 3:
             {
                 try {
@@ -135,6 +137,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
         }
     }
     
@@ -147,8 +150,8 @@ public class Estructuras
                 } catch (Exception ex) {
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                break;
             }
+            break;
             case 2:
             {
                 try {
@@ -156,8 +159,8 @@ public class Estructuras
                 } catch (Exception ex) {
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                break;
             }
+            break;
             case 3:
             {
                 try {
@@ -165,8 +168,8 @@ public class Estructuras
                 } catch (Exception ex) {
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                break;
             }
+            break;
         }
     }
     
@@ -181,6 +184,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
             case 2:
             {
                 try {
@@ -189,6 +193,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
             case 3:
             {
                 try {
@@ -197,6 +202,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
         }
         return result;
     }
@@ -211,6 +217,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
             case 2:
             {
                 try {
@@ -219,6 +226,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
             case 3:
             {
                 try {
@@ -227,6 +235,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
         }
     }
     
@@ -240,6 +249,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
             case 2:
             {
                 try {
@@ -248,6 +258,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
             case 3:
             {
                 try {
@@ -256,6 +267,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
         }
     }
     
@@ -270,6 +282,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
             case 2:
             {
                 try {
@@ -278,6 +291,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
             case 3:
             {
                 try {
@@ -286,6 +300,7 @@ public class Estructuras
                     Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            break;
         }
         return result;
     }
