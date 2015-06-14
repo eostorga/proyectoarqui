@@ -454,7 +454,7 @@ public class Procesador extends Thread
                     if (estr.disponibleD(estr.directorioPapa(idBloqEnCache)) == 0) //dir del bloque que tengo ahorita en cache
                     {
                         estr.signalC(myNumP);
-                        LW(Y, X, n);
+                        SW(Y, X, n);
                     } else
                     {
                         estr.waitD(estr.directorioPapa(idBloqEnCache));
@@ -481,7 +481,7 @@ public class Procesador extends Thread
                     if (estr.disponibleD(estr.directorioPapa(idBloqEnCache)) == 0) //agarro el dir del bloq q si ocupo
                     {
                         estr.signalC(myNumP);
-                        LW(Y, X, n);
+                        SW(Y, X, n);
                     } else
                     {
                         estr.waitD(estr.directorioPapa(idBloqEnCache));                        
