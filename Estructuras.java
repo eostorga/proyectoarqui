@@ -320,7 +320,7 @@ public class Estructuras
                 dcache2[indiceBloque][indicePalabra] = valor;
             break;
             case 3:
-                dcache2[indiceBloque][indicePalabra] = valor;
+                dcache3[indiceBloque][indicePalabra] = valor;
             break;
         }
     }
@@ -337,7 +337,7 @@ public class Estructuras
                 palabra = dcache2[indiceBloque][indicePalabra];
             break;
             case 3:
-                palabra = dcache2[indiceBloque][indicePalabra];
+                palabra = dcache3[indiceBloque][indicePalabra];
             break;
         }
         return palabra; 

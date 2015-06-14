@@ -160,6 +160,7 @@ public class Procesador extends Thread
         int j = direccionMemoria;
         for (int i = 0; i < 4; i++)
         {
+            //indiceMem, valor
             setPalabraMem(j, getPalabraCache(direccionCache, i));
             j++;
         }
@@ -818,15 +819,41 @@ public class Procesador extends Thread
         }
         
         estado += "\n";
-        estado += "La memoria cache contiene:\n";
+        estado += "La memoria cache 1 contiene:\n";
         
         for (int i = 0; i < 4; i++)
         {
-            estado += "Bloque " + i + ", estado: " + getEstBloqueCache(i) + ", idBloque: " + getIdBloqueCache(i) + " --> ";
+            estado += "Bloque " + i + ", estado: " + estr.getEstBloqueCache(1, i) + ", idBloque: " + estr.getIdBloqueCache(1, i) + " --> ";
             
             for (int j = 0; j < 4; j++)
             {
-                estado += getPalabraCache(i, j) + ", ";
+                estado += estr.getPalabraCache(1, i, j) + ", ";
+            }
+            estado += "\n";
+        }
+        
+         estado += "La memoria cache 2 contiene:\n";
+        
+        for (int i = 0; i < 4; i++)
+        {
+            estado += "Bloque " + i + ", estado: " + estr.getEstBloqueCache(2, i) + ", idBloque: " + estr.getIdBloqueCache(2, i) + " --> ";
+            
+            for (int j = 0; j < 4; j++)
+            {
+                estado += estr.getPalabraCache(2, i, j) + ", ";
+            }
+            estado += "\n";
+        }
+        
+         estado += "La memoria cache 3 contiene:\n";
+        
+        for (int i = 0; i < 4; i++)
+        {
+            estado += "Bloque " + i + ", estado: " + estr.getEstBloqueCache(3, i) + ", idBloque: " + estr.getIdBloqueCache(3, i) + " --> ";
+            
+            for (int j = 0; j < 4; j++)
+            {
+                estado += estr.getPalabraCache(3, i, j) + ", ";
             }
             estado += "\n";
         }
