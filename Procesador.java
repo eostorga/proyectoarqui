@@ -525,6 +525,17 @@ public class Procesador extends Thread
                     } else
                     {
                         estr.waitD(estr.directorioPapa(idBloqEnCache));
+						
+						// USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        try{
+                            myMp.phaser.arriveAndAwaitAdvance();
+                            myMp.ciclo++;
+                            cont++;
+                        } catch(Exception e){
+                            e.printStackTrace();
+                        }
+                        // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
+						
                         estr.quitarCompartidos(idBloqEnCache, myNumP); //quita a los demas y me deja a mi
                         estr.anadirProcesador(idBloqEnCache, myNumP); 
                         setEstDir(estr.directorioPapa(idBloqEnCache), idBloqEnCache, M);
@@ -552,6 +563,17 @@ public class Procesador extends Thread
                     {
                         System.out.println("AGARRÉ EL DIRECTORIO");
                         estr.waitD(estr.directorioPapa(idBloqEnCache));
+						
+						// USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        try{
+                            myMp.phaser.arriveAndAwaitAdvance();
+                            myMp.ciclo++;
+                            cont++;
+                        } catch(Exception e){
+                            e.printStackTrace();
+                        }
+                        // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
+						
                         System.out.println("numBloqMem tiene un valor de :"+numBloqMem);
                         if (estr.getEstadoBloqueDir(numBloqMem) == C)
                         {   
@@ -578,6 +600,17 @@ public class Procesador extends Thread
                             } else
                             {
                                 estr.waitC(cacheDuena);
+								
+								// USA DIRECTORIO EN EL SIGUIENTE CICLO //
+								try{
+									myMp.phaser.arriveAndAwaitAdvance();
+									myMp.ciclo++;
+									cont++;
+								} catch(Exception e){
+									e.printStackTrace();
+								}
+								// -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
+								
                                 estr.guardarEnMemoria(cacheDuena, idBloqEnCache, dirBloqCache);
                                 estr.setEstBloqueCache(cacheDuena, idBloqEnCache, I);
                                 estr.signalC(cacheDuena);
