@@ -517,32 +517,32 @@ public class Estructuras
         if(idBloque >= 0 && idBloque <=31)
         {
             indiceDir = idBloque/4;
-            if(getEntradaDir(1,indiceDir,E) == 'M')
+            if(getEntradaDir(1,indiceDir,E) == M)
             {
-                if(getEntradaDir(1,indiceDir,P1) == '1') dueno = 1;
-                else if(getEntradaDir(1,indiceDir,P2) == '1') dueno = 2;
-                else if(getEntradaDir(1,indiceDir,P3) == '1') dueno = 3;
+                if(getEntradaDir(1,indiceDir,P1) == 1) dueno = 1;
+                else if(getEntradaDir(1,indiceDir,P2) == 1) dueno = 2;
+                else if(getEntradaDir(1,indiceDir,P3) == 1) dueno = 3;
             }
         }
         
         if(idBloque >= 32 && idBloque <=63)
         {
             indiceDir = (idBloque-32)/4;
-            if(getEntradaDir(2,indiceDir,E)== 'M')
+            if(getEntradaDir(2,indiceDir,E)== M)
             {
-                if(getEntradaDir(2,indiceDir,P1)== '1') dueno = 1;
-                else if(getEntradaDir(2,indiceDir,P2)== '1') dueno = 2;
-                else if(getEntradaDir(2,indiceDir,P3)== '1') dueno = 3;
+                if(getEntradaDir(2,indiceDir,P1)== 1) dueno = 1;
+                else if(getEntradaDir(2,indiceDir,P2)== 1) dueno = 2;
+                else if(getEntradaDir(2,indiceDir,P3)== 1) dueno = 3;
             }
         }
         if(idBloque >= 64 && idBloque <=95)
         {
             indiceDir = (idBloque-64)/4;
-            if(getEntradaDir(3,indiceDir,E)== 'M')
+            if(getEntradaDir(3,indiceDir,E)== M)
             {
-                if(getEntradaDir(3,indiceDir,P1)== '1') dueno = 1;
-                else if(getEntradaDir(3,indiceDir,P2)== '1') dueno = 2;
-                else if(getEntradaDir(3,indiceDir,P3)== '1') dueno = 3;
+                if(getEntradaDir(3,indiceDir,P1)== 1) dueno = 1;
+                else if(getEntradaDir(3,indiceDir,P2)== 1) dueno = 2;
+                else if(getEntradaDir(3,indiceDir,P3)== 1) dueno = 3;
             }
         }
         return dueno;
