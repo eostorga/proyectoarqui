@@ -214,8 +214,7 @@ public class Estructuras
                 try {
                     SemaforoCache1.acquire();
                 } catch (InterruptedException ex) {
-                    //Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
-                    System.out.printf("WAS interrupted\n");
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             break;
@@ -224,8 +223,7 @@ public class Estructuras
                 try {
                     SemaforoCache2.acquire();
                 } catch (InterruptedException ex) {
-                    //Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
-                    System.out.printf("WAS interrupted\n");
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             break;
@@ -234,8 +232,7 @@ public class Estructuras
                 try {
                     SemaforoCache3.acquire();
                 } catch (InterruptedException ex) {
-                    //Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
-                    System.out.printf("WAS interrupted\n");
+                    Logger.getLogger(Estructuras.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             break;
@@ -312,6 +309,9 @@ public class Estructuras
     // SECCIÓN DE SETS Y GETS, NO IMPORTA DE DONDE VENGA LA MEMORIA Y CACHE,
     // LOS CAMBIOS SE HACEN SOLO ACÁ Y NO EN EL RESTO DEL CÓDIGO.
     
+    // recibe indiceBloque = indice del bloque en cache de 0 a 3
+    // int indicePalabra = indice de palabra en cache de 0 a 3
+    // nuevo valor para esa posición de caché
     public void setPalabraCache(int numCache, int indiceBloque, int indicePalabra, int valor)
     {
         switch(numCache)
@@ -328,6 +328,8 @@ public class Estructuras
         }
     }
     
+    // recibe indiceBloque = indice del bloque en cache de 0 a 3
+    // int indicePalabra = indice de palabra en cache de 0 a 3
     public int getPalabraCache(int numCache, int indiceBloque, int indicePalabra)
     {
         int palabra = -1;
@@ -346,6 +348,8 @@ public class Estructuras
         return palabra; 
     }
     
+    // recibe indiceBloque = indice del bloque en cache de 0 a 3
+    // nuevo valor de estado
     public void setEstBloqueCache(int numCache, int indiceBloque, int estado)
     {
         switch(numCache)
@@ -362,6 +366,7 @@ public class Estructuras
         }
     }
     
+    // recibe indiceBloque = indice del bloque en cache de 0 a 3
     public int getEstBloqueCache(int numCache, int indiceBloque)
     {
         int estado = -1;
@@ -380,6 +385,8 @@ public class Estructuras
         return estado;
     }
     
+    // recibe indiceBloque = indice del bloque en cache de 0 a 3
+    // nuevo id para esa posición de caché
     public void setIdBloqueCache(int numCache, int indiceBloque, int id)
     {
         switch(numCache)
@@ -396,6 +403,7 @@ public class Estructuras
         }
     }
     
+    // recibe indiceBloque = indice del bloque en cache de 0 a 3
     public int getIdBloqueCache(int numCache, int indiceBloque)
     {
         int id = -1;
@@ -414,16 +422,21 @@ public class Estructuras
         return id;
     }
     
+    //recibe indiceMem = indice en memoria (0-95)
     public void setPalabraMem(int numCache, int indiceMem, int valor)
     {
         smem[indiceMem] = valor;
     }
     
+    //recibe indiceMem = indice en memoria (0-95)
     public int getPalabraMem(int numCache, int indiceMem)
     {
         return smem [indiceMem];
     }
     
+    // recibe indiceDir = indice del 0 al 7
+    // constante de entrada
+    // nuevo valor
     public void setEntradaDir(int numDir, int indiceDir, int entrada, int valor)
     {
         switch(numDir)
@@ -440,6 +453,8 @@ public class Estructuras
         }
     }
     
+    // recibe indiceDir = indice del 0 al 7
+    // constante de entrada
     public int getEntradaDir(int numDir, int indiceDir, int entrada)
     {
         int salida = -1;
@@ -461,7 +476,7 @@ public class Estructuras
     //FIN DE LA SECCION DE SETS Y GETS
     ////////////////////////////////////////////////////////////////////////////
     
-    // ESTE METODO DEVUELVE EL ESTADO EN EL DIRECTORIO DE UN BLOQUE CON ID = DIR MEM BLOQUE (0-24)
+    // ESTE METODO DEVUELVE EL ESTADO EN EL DIRECTORIO DE UN BLOQUE CON ID = DIR MEM BLOQUE (0-23)
     // DEVUELVE: 'C', 'M', 'U'
     public int getEstadoBloqueDir(int idBloque)
     {
@@ -506,8 +521,50 @@ public class Estructuras
         return papa;
     }
     
+    public int mapearABloque(int indice){
+        int bloque = -1;
+        if(indice >= 0 && indice <=31){
+            switch(indice){
+                case 0: case 1: case 2: case 3: bloque = 0; break;
+                case 4: case 5: case 6: case 7: bloque = 1; break;
+                case 8: case 9: case 10: case 11: bloque = 2; break;
+                case 12: case 13: case 14: case 15: bloque = 3; break;
+                case 16: case 17: case 18: case 19: bloque = 4; break;
+                case 20: case 21: case 22: case 23: bloque = 5; break;
+                case 24: case 25: case 26: case 27: bloque = 6; break;
+                case 28: case 29: case 30: case 31: bloque = 7; break;
+            }
+        }
+        if(indice >= 32 && indice <=63){
+            switch(indice){
+                case 32: case 33: case 34: case 35: bloque = 8; break;
+                case 36: case 37: case 38: case 39: bloque = 9; break;
+                case 40: case 41: case 42: case 43: bloque = 10; break;
+                case 44: case 45: case 46: case 47: bloque = 11; break;
+                case 48: case 49: case 50: case 51: bloque = 12; break;
+                case 52: case 53: case 54: case 55: bloque = 13; break;
+                case 56: case 57: case 58: case 59: bloque = 14; break;
+                case 60: case 61: case 62: case 63: bloque = 15; break;
+            }
+        }
+        if(indice >= 64 && indice <=95){
+            switch(indice){
+                case 64: case 65: case 66: case 67: bloque = 16; break;
+                case 68: case 69: case 70: case 71: bloque = 17; break;
+                case 72: case 73: case 74: case 75: bloque = 18; break;
+                case 76: case 77: case 78: case 79: bloque = 19; break;
+                case 80: case 81: case 82: case 83: bloque = 20; break;
+                case 84: case 85: case 86: case 87: bloque = 21; break;
+                case 88: case 89: case 90: case 91: bloque = 22; break;
+                case 92: case 93: case 94: case 95: bloque = 23; break;
+            }
+        }
+        return bloque;
+    }
+
+    
+    // idBloque = EL ID de la palabra en memoria (0-95)
     // ESTE MÉTODO DEVUELVE CUÁL PROCESADOR TIENE EL BLOQUE EN CASO DE QUE ESTÉ MODIFICADO
-    // REQUIERE: EL ID DEL BLOQUE EN MEMORIA
     // DEVUELVE; 1, 2, 3
     public int consultarDuenoBloqueDir(int idBloque)
     {
@@ -516,7 +573,7 @@ public class Estructuras
         
         if(idBloque >= 0 && idBloque <=31)
         {
-            indiceDir = idBloque/4;
+            indiceDir = mapearABloque(idBloque)%8;
             if(getEntradaDir(1,indiceDir,E) == M)
             {
                 if(getEntradaDir(1,indiceDir,P1) == 1) dueno = 1;
@@ -527,7 +584,7 @@ public class Estructuras
         
         if(idBloque >= 32 && idBloque <=63)
         {
-            indiceDir = (idBloque-32)/4;
+             indiceDir = mapearABloque(idBloque)%8;
             if(getEntradaDir(2,indiceDir,E)== M)
             {
                 if(getEntradaDir(2,indiceDir,P1)== 1) dueno = 1;
@@ -537,7 +594,7 @@ public class Estructuras
         }
         if(idBloque >= 64 && idBloque <=95)
         {
-            indiceDir = (idBloque-64)/4;
+            indiceDir = mapearABloque(idBloque)%8;
             if(getEntradaDir(3,indiceDir,E)== M)
             {
                 if(getEntradaDir(3,indiceDir,P1)== 1) dueno = 1;
@@ -576,21 +633,24 @@ public class Estructuras
         int indiceDir; 
         if(idBloque >= 0 && idBloque <=31)
         {
-            indiceDir = idBloque/4;
+            //indiceDir = idBloque/4;
+            indiceDir = mapearABloque(idBloque)%8;
             if(proce == 1) setEntradaDir(1, indiceDir, P1, 1);
             if(proce == 2) setEntradaDir(1, indiceDir, P2, 1);
             if(proce == 3) setEntradaDir(1, indiceDir, P3, 1);
         }
         if(idBloque >= 32 && idBloque <=63)
         {
-            indiceDir = (idBloque-32)/4;
+            //indiceDir = (idBloque-32)/4;
+            indiceDir = mapearABloque(idBloque)%8;
             if(proce == 1) setEntradaDir(2, indiceDir, P1, 1);
             if(proce == 2) setEntradaDir(2, indiceDir, P2, 1);
             if(proce == 3) setEntradaDir(2, indiceDir, P3, 1);
         }
         if(idBloque >= 64 && idBloque <=95)
         {
-            indiceDir = (idBloque-64)/4;
+            //indiceDir = (idBloque-64)/4;
+            indiceDir = mapearABloque(idBloque)%8;
             if(proce == 1) setEntradaDir(3, indiceDir, P1, 1);
             if(proce == 2) setEntradaDir(3, indiceDir, P2, 1);
             if(proce == 3) setEntradaDir(3, indiceDir, P3, 1);
@@ -602,21 +662,24 @@ public class Estructuras
         int indiceDir; 
         if(idBloque >= 0 && idBloque <=31)
         {
-            indiceDir = idBloque/4;
+            //indiceDir = idBloque/4;
+            indiceDir = mapearABloque(idBloque)%8;
             if(proce == 1) setEntradaDir(1, indiceDir, P1, 0);
             if(proce == 2) setEntradaDir(1, indiceDir, P2, 0);
             if(proce == 3) setEntradaDir(1, indiceDir, P3, 0);
         }
         if(idBloque >= 32 && idBloque <=63)
         {
-            indiceDir = (idBloque-32)/4;
+            //indiceDir = (idBloque-32)/4;
+            indiceDir = mapearABloque(idBloque)%8;
             if(proce == 1) setEntradaDir(2, indiceDir, P1, 0);
             if(proce == 2) setEntradaDir(2, indiceDir, P2, 0);
             if(proce == 3) setEntradaDir(2, indiceDir, P3, 0);
         }
         if(idBloque >= 64 && idBloque <=95)
         {
-            indiceDir = (idBloque-64)/4;
+            //indiceDir = (idBloque-64)/4;
+            indiceDir = mapearABloque(idBloque)%8;
             if(proce == 1) setEntradaDir(3, indiceDir, P1, 0);
             if(proce == 2) setEntradaDir(3, indiceDir, P2, 0);
             if(proce == 3) setEntradaDir(3, indiceDir, P3, 0);
@@ -629,7 +692,8 @@ public class Estructuras
         
         if(idBloque >= 0 && idBloque <=31)
         {
-            indiceDir = idBloque/4;
+            //indiceDir = idBloque/4;
+            indiceDir = mapearABloque(idBloque)%8;
             if(getEntradaDir(1, indiceDir, P1) == 0 && getEntradaDir(1, indiceDir, P2) == 0 && getEntradaDir(1, indiceDir, P3) == 0)
             {
                 setEntradaDir(1, indiceDir, E, U); 
@@ -638,7 +702,8 @@ public class Estructuras
         
         if(idBloque >= 32 && idBloque <=63)
         {
-            indiceDir = (idBloque-32)/4;
+            //indiceDir = (idBloque-32)/4;
+            indiceDir = mapearABloque(idBloque)%8;
             if(getEntradaDir(2, indiceDir, P1) == 0 && getEntradaDir(2, indiceDir, P2) == 0 && getEntradaDir(2, indiceDir, P3) == 0)
             {
                 setEntradaDir(2, indiceDir, E, U); 
@@ -647,7 +712,8 @@ public class Estructuras
         
         if(idBloque >= 64 && idBloque <=95)
         {
-            indiceDir = (idBloque-64)/4;
+            //indiceDir = (idBloque-64)/4;
+            indiceDir = mapearABloque(idBloque)%8;
             if(getEntradaDir(3, indiceDir, P1) == 0 && getEntradaDir(3, indiceDir, P2) == 0 && getEntradaDir(3, indiceDir, P3) == 0)
             {
                 setEntradaDir(3, indiceDir, E, U);
@@ -661,7 +727,8 @@ public class Estructuras
         
         if((idBloque >= 0) && (idBloque <= 31))
         {
-            indiceDir = idBloque/4;
+            //indiceDir = idBloque/4;
+            indiceDir = mapearABloque(idBloque)%8;
             
             if((proc != 1) && (getEntradaDir(1, indiceDir, P1) == 1))
             {
@@ -688,7 +755,9 @@ public class Estructuras
         
         if((idBloque >= 32) && (idBloque <=63))
         {
-            indiceDir = (idBloque-32)/4;
+            //indiceDir = (idBloque-32)/4;
+            indiceDir = mapearABloque(idBloque)%8;
+            
             if((proc != 1) && (getEntradaDir(2, indiceDir, P1) == 1))
             {
                 setEntradaDir(2, indiceDir, P1, 0);
@@ -714,7 +783,8 @@ public class Estructuras
         
         if((idBloque >= 64) && (idBloque <=95))
         {
-            indiceDir = (idBloque-64)/4;
+            //indiceDir = (idBloque-64)/4;
+            indiceDir = mapearABloque(idBloque)%8;
             
             if((proc != 1) && (getEntradaDir(3, indiceDir, P1) == 1))
             {
