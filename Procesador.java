@@ -668,7 +668,7 @@ public class Procesador extends Thread
 								// -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
 								
                                 estr.guardarEnMemoria(cacheDuena, idBloqEnCache, dirBloqCache);
-                                estr.setEstBloqueCache(cacheDuena, idBloqEnCache, I);
+                                estr.setEstBloqueCache(cacheDuena, dirBloqCache, I);
                                 estr.signalC(cacheDuena);
                                 
                                 estr.quitarCompartidos(idBloqEnCache, myNumP); //quita a los demas y me deja a mi
