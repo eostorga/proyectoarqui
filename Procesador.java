@@ -158,15 +158,17 @@ public class Procesador extends Thread
         }*/
         
         for (int i = 0; i < cantCiclos; i++){
-            puedoSeguir = false;/*
+            puedoSeguir = false;
             try{
+                myMp.phaser.arrive();
                 myMp.phaser.arriveAndAwaitAdvance();
-            }catch(Exception e){}*/
+            }catch(Exception e){}
             myMp.ciclo++;
             cont++;
         }
 
         puedoSeguir = true;
+        //myMp.phaser.arrive();
         //System.out.println("Ya puede cambiar de instrucción.");
     }
 
@@ -208,15 +210,17 @@ public class Procesador extends Thread
         }
         
         for (int i = 0; i < cantCiclos; i++){
-            puedoSeguir = false; /*
+            puedoSeguir = false; 
             try{
+                myMp.phaser.arrive();
                 myMp.phaser.arriveAndAwaitAdvance();
-            }catch(Exception e){}*/
+            }catch(Exception e){}
             myMp.ciclo++;
             cont++;
         }
         
         puedoSeguir = true;
+        //myMp.phaser.arrive();
     }
     
     // Leer una palabra
@@ -251,6 +255,12 @@ public class Procesador extends Thread
                     {
                         estr.waitD(estr.directorioPapa(idBloqEnCache));
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        try{
+                            myMp.phaser.arrive();
+                            myMp.phaser.arriveAndAwaitAdvance();
+                        }catch(Exception e){}
+                        myMp.ciclo++;
+                        cont++;
                         // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
                         estr.quitarProcesador(idBloqEnCache, myNumP);
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
@@ -268,6 +278,12 @@ public class Procesador extends Thread
                     {
                         estr.waitD(estr.directorioPapa(idBloqEnCache));    
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        try{
+                            myMp.phaser.arrive();
+                            myMp.phaser.arriveAndAwaitAdvance();
+                        }catch(Exception e){}
+                        myMp.ciclo++;
+                        cont++;
                         // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
                         guardarEnMemoria(idBloqEnCache, dirBloqCache);
                         //estr.guardarEnMemoria(myNumP, idBloqEnCache, dirBloqCache);
@@ -305,6 +321,12 @@ public class Procesador extends Thread
                     {
                         estr.waitD(estr.directorioPapa(idBloqEnCache));
 			// USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        try{
+                            myMp.phaser.arrive();
+                            myMp.phaser.arriveAndAwaitAdvance();
+                        }catch(Exception e){}
+                        myMp.ciclo++;
+                        cont++;
                         // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
 			guardarEnMemoria(idBloqEnCache, dirBloqCache);
                         //estr.guardarEnMemoria(myNumP, idBloqEnCache, dirBloqCache);
@@ -326,6 +348,12 @@ public class Procesador extends Thread
                     {
                         estr.waitD(estr.directorioPapa(idBloqEnCache));
 			// USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        try{
+                            myMp.phaser.arrive();
+                            myMp.phaser.arriveAndAwaitAdvance();
+                        }catch(Exception e){}
+                        myMp.ciclo++;
+                        cont++;
                         // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
                         if (estr.getEstadoBloqueDir(numBloqMem) == C) //quiero el estado en el dir del bloque 0-24
                         {
@@ -349,6 +377,12 @@ public class Procesador extends Thread
                             {
                                 estr.waitC(cacheDuena);  //si la logro agarrar
                                 // USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                                try{
+                                    myMp.phaser.arrive();
+                                    myMp.phaser.arriveAndAwaitAdvance();
+                                }catch(Exception e){}
+                                myMp.ciclo++;
+                                cont++;
                                 // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
                                 estr.guardarEnMemoria(cacheDuena, idBloqEnCache, dirBloqCache);
                                 estr.setEstBloqueCache(cacheDuena, dirBloqCache, C);
@@ -414,6 +448,12 @@ public class Procesador extends Thread
                     {
                         estr.waitD(estr.directorioPapa(idBloqEnCache));
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        try{
+                            myMp.phaser.arrive();
+                            myMp.phaser.arriveAndAwaitAdvance();
+                        }catch(Exception e){}
+                        myMp.ciclo++;
+                        cont++;
                         // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
                         estr.quitarProcesador(idBloqEnCache, myNumP);
                         estr.verificarUncached(idBloqEnCache); //por si solo uno lo tiene compartido, q se ponga 'U'
@@ -431,6 +471,12 @@ public class Procesador extends Thread
                     {
                         estr.waitD(estr.directorioPapa(idBloqEnCache)); 
                         // USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        try{
+                            myMp.phaser.arrive();
+                            myMp.phaser.arriveAndAwaitAdvance();
+                        }catch(Exception e){}
+                        myMp.ciclo++;
+                        cont++;
                         // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
                         guardarEnMemoria(idBloqEnCache, dirBloqCache);
                         //estr.guardarEnMemoria(myNumP, idBloqEnCache, dirBloqCache);
@@ -462,6 +508,12 @@ public class Procesador extends Thread
                     {
                         estr.waitD(estr.directorioPapa(idBloqEnCache));
 			// USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        try{
+                            myMp.phaser.arrive();
+                            myMp.phaser.arriveAndAwaitAdvance();
+                        }catch(Exception e){}
+                        myMp.ciclo++;
+                        cont++;
                         // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
                         estr.quitarCompartidos(idBloqEnCache, myNumP); //quita a los demas y me deja a mi
                         estr.anadirProcesador(idBloqEnCache, myNumP); 
@@ -489,6 +541,12 @@ public class Procesador extends Thread
                     {
                         estr.waitD(estr.directorioPapa(idBloqEnCache));
 			// USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                        try{
+                            myMp.phaser.arrive();
+                            myMp.phaser.arriveAndAwaitAdvance();
+                        }catch(Exception e){}
+                        myMp.ciclo++;
+                        cont++;
                         // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
                         if (estr.getEstadoBloqueDir(numBloqMem) == C)
                         {   
@@ -514,6 +572,12 @@ public class Procesador extends Thread
                             {
                                 estr.waitC(cacheDuena);
                                 // USA DIRECTORIO EN EL SIGUIENTE CICLO //
+                                try{
+                                    myMp.phaser.arrive();
+                                    myMp.phaser.arriveAndAwaitAdvance();
+                                }catch(Exception e){}
+                                myMp.ciclo++;
+                                cont++;
                                 // -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
                                 estr.guardarEnMemoria(cacheDuena, idBloqEnCache, dirBloqCache);
                                 estr.setEstBloqueCache(cacheDuena, dirBloqCache, I);
@@ -654,16 +718,14 @@ public class Procesador extends Thread
         
         try{
             //myMp.barrera.await();
+            myMp.phaser.arrive();
             myMp.phaser.arriveAndAwaitAdvance();
             //myMp.phaser.arriveAndDeregister();
             //ciclo++;
             myMp.ciclo++;
             cont++;
             //System.out.println("Ciclo #"+ciclo+". Puede cambiar de instrucción.\n");
-        } catch(Exception e)
-        {
-            e.printStackTrace();
-        }
+        } catch(Exception e){}
         
     }
 
