@@ -436,6 +436,17 @@ public class Procesador extends Thread
                             } else
                             {
                                 estr.waitC(cacheDuena);  //si la logro agarrar
+								
+								// USA DIRECTORIO EN EL SIGUIENTE CICLO //
+								try{
+									myMp.phaser.arriveAndAwaitAdvance();
+									myMp.ciclo++;
+									cont++;
+								} catch(Exception e){
+									e.printStackTrace();
+								}
+								// -- USA DIRECTORIO EN EL SIGUIENTE CICLO //
+								
                                 estr.guardarEnMemoria(cacheDuena, idBloqEnCache, dirBloqCache);
                                 estr.setEstBloqueCache(cacheDuena, dirBloqCache, C);
                                 estr.signalC(cacheDuena);
