@@ -126,24 +126,47 @@ public class Procesador extends Thread
     public void cargarACache(int direccionMemoria, int direccionCache)
     {
         int j = direccionMemoria;
+        int cantCiclos = 0;
         
         for (int i = 0; i < 4; i++)
         {
             setPalabraCache(direccionCache, i, getPalabraMem(j));
             j++;
         }
+        
+        switch(myNumP)
+        {
+            case 1:
+            {
+                if(direccionMemoria >= 0 && direccionMemoria <= 31) cantCiclos = 16;
+                if(direccionMemoria >= 32 && direccionMemoria <= 63) cantCiclos = 32;
+                if(direccionMemoria >= 32 && direccionMemoria <= 63) cantCiclos = 32;
+            }
+            break;
+            case 2:
+            {
+                if(direccionMemoria >= 0 && direccionMemoria <= 31) cantCiclos = 32;
+                if(direccionMemoria >= 32 && direccionMemoria <= 63) cantCiclos = 16;
+                if(direccionMemoria >= 32 && direccionMemoria <= 63) cantCiclos = 32;
+            }
+            break;
+            case 3:
+            {
+                if(direccionMemoria >= 0 && direccionMemoria <= 31) cantCiclos = 32;
+                if(direccionMemoria >= 32 && direccionMemoria <= 63) cantCiclos = 32;
+                if(direccionMemoria >= 32 && direccionMemoria <= 63) cantCiclos = 16;
+            }
+            break;
+        }
 
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < cantCiclos; i++)
         {
             puedoSeguir = false;
             try
             {
                 myMp.phaser.arriveAndAwaitAdvance();
-                //myMp.barrera.await();
-                //ciclo++;
                 myMp.ciclo++;
                 cont++;
-                //System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
             } catch(Exception e)
             {
                 e.printStackTrace();
@@ -158,32 +181,54 @@ public class Procesador extends Thread
     public void guardarEnMemoria(int direccionMemoria, int direccionCache)
     {
         int j = direccionMemoria;
+        int cantCiclos = 0;
+                
         for (int i = 0; i < 4; i++)
         {
-            //indiceMem, valor
             setPalabraMem(j, getPalabraCache(direccionCache, i));
             j++;
         }
-
-        for (int i = 0; i < 16; i++)
+        
+        switch(myNumP)
+        {
+            case 1:
+            {
+                if(direccionMemoria >= 0 && direccionMemoria <= 31) cantCiclos = 16;
+                if(direccionMemoria >= 32 && direccionMemoria <= 63) cantCiclos = 32;
+                if(direccionMemoria >= 32 && direccionMemoria <= 63) cantCiclos = 32;
+            }
+            break;
+            case 2:
+            {
+                if(direccionMemoria >= 0 && direccionMemoria <= 31) cantCiclos = 32;
+                if(direccionMemoria >= 32 && direccionMemoria <= 63) cantCiclos = 16;
+                if(direccionMemoria >= 32 && direccionMemoria <= 63) cantCiclos = 32;
+            }
+            break;
+            case 3:
+            {
+                if(direccionMemoria >= 0 && direccionMemoria <= 31) cantCiclos = 32;
+                if(direccionMemoria >= 32 && direccionMemoria <= 63) cantCiclos = 32;
+                if(direccionMemoria >= 32 && direccionMemoria <= 63) cantCiclos = 16;
+            }
+            break;
+        }
+        
+        for (int i = 0; i < cantCiclos; i++)
         {
             puedoSeguir = false;
             try
             {
                 myMp.phaser.arriveAndAwaitAdvance();
-                //myMp.barrera.await();
-                //ciclo++;
                 myMp.ciclo++;
                 cont++;
-                //System.out.println("Ciclo #"+ciclo+". No puede cambiar de instrucción.");
             } catch(Exception e)
             {
                 e.printStackTrace();
             }
         }
-
+        
         puedoSeguir = true;
-        //System.out.println("Ya puede cambiar de instrucción.");
     }
 
     public void pedirParaLeer(int idBloque, int direccionMemoria, int direccionCache) {
