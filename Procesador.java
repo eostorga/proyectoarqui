@@ -874,6 +874,21 @@ public class Procesador extends Thread
         
         estado += "La cantidad de ciclos que tardó el hilo es: " + cont + "\n\n";
         //System.out.println(estado);
+        estado += "Directorio 1:\n";
+        for (int i = 0; i < 8; i+=1)
+        {
+            estado += estr.getEntradaDir(1,i,0) + ", " + estr.getEntradaDir(1,i,1) + ", " + estr.getEntradaDir(1,i,2) + ", " + estr.getEntradaDir(1,i,3) + ", " + estr.getEntradaDir(1,i,4) + "\n";
+        }
+        estado += "Directorio 2:\n";
+        for (int i = 0; i < 8; i+=1)
+        {
+            estado += estr.getEntradaDir(2,i,0) + ", " + estr.getEntradaDir(2,i,1) + ", " + estr.getEntradaDir(2,i,2) + ", " + estr.getEntradaDir(2,i,3) + ", " + estr.getEntradaDir(2,i,4) + "\n";
+        }
+        estado += "Directorio 3:\n";
+        for (int i = 0; i < 8; i+=1)
+        {
+            estado += estr.getEntradaDir(3,i,0) + ", " + estr.getEntradaDir(3,i,1) + ", " + estr.getEntradaDir(3,i,2) + ", " + estr.getEntradaDir(3,i,3) + ", " + estr.getEntradaDir(3,i,4) + "\n";
+        }
         return estado;
     }
 
